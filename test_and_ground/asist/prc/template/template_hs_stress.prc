@@ -71,6 +71,10 @@ PROC $sc_$cpu_hs_stress
 ;	Date		   Name		Description
 ;	07/13/09	Walt Moleski	Original Procedure.
 ;	01/12/11	Walt Moleski	Updated for HS 2.1.0.0
+;       09/19/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -132,6 +136,8 @@ LOCAL rawcmd, stream, index
 local HSAppName = HS_APP_NAME
 local ramDir = "RAM:0"  
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
+
 ;; Table Names
 local AppMonTblName = HSAppName & "." & HS_AMT_TABLENAME
 local EvtMonTblName = HSAppName & "." & HS_EMT_TABLENAME
@@ -149,7 +155,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -180,7 +187,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt12",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt12",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -199,7 +206,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt6",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt6",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -218,7 +225,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -237,56 +244,56 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct3",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct3",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
 write ";  Step 1.4:  Start the Applications that are not started automatically."
 write ";***********************************************************************"
 ;; Start the cFE Test Applications
-s load_start_app ("TST_EVS","$CPU")
+s load_start_app ("TST_EVS",hostCPU)
 wait 5
-s load_start_app ("TST_TBL","$CPU")
+s load_start_app ("TST_TBL",hostCPU)
 wait 5
-s load_start_app ("TST_TBL2","$CPU")
+s load_start_app ("TST_TBL2",hostCPU)
 wait 5
-s load_start_app ("TST_ES2","$CPU")
+s load_start_app ("TST_ES2",hostCPU)
 wait 5
-s load_start_app ("TST_ES3","$CPU")
+s load_start_app ("TST_ES3",hostCPU)
 wait 5
-s load_start_app ("TST_ES4","$CPU")
+s load_start_app ("TST_ES4",hostCPU)
 wait 5
-s load_start_app ("TST_ES5","$CPU")
+s load_start_app ("TST_ES5",hostCPU)
 wait 5
-s load_start_app ("TST_ES6","$CPU")
+s load_start_app ("TST_ES6",hostCPU)
 wait 5
-s load_start_app ("TST_ES7","$CPU")
+s load_start_app ("TST_ES7",hostCPU)
 wait 5
-s load_start_app ("TST_ES8","$CPU")
+s load_start_app ("TST_ES8",hostCPU)
 wait 5
-s load_start_app ("TST_ES9","$CPU")
+s load_start_app ("TST_ES9",hostCPU)
 wait 5
-s load_start_app ("TST_ES10","$CPU")
+s load_start_app ("TST_ES10",hostCPU)
 wait 5
-s load_start_app ("TST_ES11","$CPU")
+s load_start_app ("TST_ES11",hostCPU)
 wait 5
-s load_start_app ("TST_ES12","$CPU")
+s load_start_app ("TST_ES12",hostCPU)
 wait 5
-s load_start_app ("TST_ES13","$CPU")
+s load_start_app ("TST_ES13",hostCPU)
 wait 5
-s load_start_app ("TST_ES14","$CPU")
+s load_start_app ("TST_ES14",hostCPU)
 wait 5
-s load_start_app ("TST_ES15","$CPU")
+s load_start_app ("TST_ES15",hostCPU)
 wait 5
-s load_start_app ("TST_ES16","$CPU")
+s load_start_app ("TST_ES16",hostCPU)
 wait 5
-s load_start_app ("TST_ES17","$CPU")
+s load_start_app ("TST_ES17",hostCPU)
 wait 5
-s load_start_app ("TST_ES18","$CPU")
+s load_start_app ("TST_ES18",hostCPU)
 wait 5
-s load_start_app ("TST_ES19","$CPU")
+s load_start_app ("TST_ES19",hostCPU)
 wait 5
-s load_start_app ("TST_ES20","$CPU")
+s load_start_app ("TST_ES20",hostCPU)
 wait 5
 
 ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_RESTART_APP_INF_EID, "INFO", 3
@@ -396,13 +403,13 @@ write ";  Step 2.0: Table Entry Verification Tests "
 write ";***********************************************************************"
 write ";  Step 2.1: Verify that the Application Monitoring Table is full"
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, AppMonTblName, "A", "$cpu_hs_dumpamt", "$CPU", amtAPID)
+s get_tbl_to_cvt(ramDir, AppMonTblName, "A", "$cpu_hs_dumpamt", hostCPU, amtAPID)
 wait 5
 
 local index
 local es2Slot=0
 ;; Check that all the application slots are filled
-for index = 1 to HS_MAX_CRITICAL_APPS do
+for index = 1 to HS_MAX_MONITORED_APPS do
   if ($SC_$CPU_HS_AMT[index].AppName = "") then
     break
   elseif ($SC_$CPU_HS_AMT[index].AppName = "TST_ES2") then
@@ -410,8 +417,8 @@ for index = 1 to HS_MAX_CRITICAL_APPS do
   endif
 enddo
 
-;; If all the table entries were filled, index will = HS_MAX_CRITICAL_APPS
-if (index = HS_MAX_CRITICAL_APPS+1) then
+;; If all the table entries were filled, index will = HS_MAX_MONITORED_APPS
+if (index = HS_MAX_MONITORED_APPS+1) then
   write "<*> Passed (2003) - HS supported the maximum defined Critical Applications"
   ut_setrequirements HS_2003, "P"
 else
@@ -439,18 +446,18 @@ wait 5
 write ";***********************************************************************"
 write ";  Step 2.2: Verify that the Event Monitoring Table is full"
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", "$CPU", emtAPID)
+s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", hostCPU, emtAPID)
 wait 5
 
 ;; Check that all the application slots are filled
-for index = 1 to HS_MAX_CRITICAL_EVENTS do
+for index = 1 to HS_MAX_MONITORED_EVENTS do
   if ($SC_$CPU_HS_EMT[index].AppName = "") then
     break
   endif
 enddo
 
-;; If all the table entries were filled, index will = HS_MAX_CRITICAL_EVENTS + 1
-if (index = HS_MAX_CRITICAL_EVENTS+1) then
+;; If all the table entries were filled, index will = HS_MAX_MONITORED_EVENTS + 1
+if (index = HS_MAX_MONITORED_EVENTS+1) then
   write "<*> Passed (5003) - HS supported the maximum defined Critical Events"
   ut_setrequirements HS_5003, "P"
 else
@@ -464,7 +471,7 @@ wait 5
 write ";***********************************************************************"
 write ";  Step 2.3: Verify that the Execution Counter Table is full"
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", hostCPU, xctAPID)
 wait 5
 
 local index
@@ -496,7 +503,8 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

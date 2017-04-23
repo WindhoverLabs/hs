@@ -23,6 +23,10 @@
 
   \verbatim  
   $Log: cfs_hs.dox  $
+  Revision 1.2 2015/11/12 14:25:18EST wmoleski 
+  Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+  Revision 1.3 2015/05/04 16:08:39EDT lwalling 
+  Remove references to critical from application and event monitors
   Revision 1.2 2010/11/23 18:24:35EST aschoeni 
   Updated Users Guide for CPU Utilization
   Revision 1.2 2009/08/26 18:56:40EDT aschoeni 
@@ -145,7 +149,7 @@
 
          <H2> Application Monitor </H2>
 
-         The HS Application Application Monitor (AppMon), sometimes referred to as the Critical Applications Monitor, is used to take action when a table defined application fails to increment its Execution Counter for the table defined number of cycles. The HS Application will not start monitoring applications until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out).<BR>
+         The HS Application Application Monitor (AppMon), sometimes referred to as the Applications Monitor, is used to take action when a table defined application fails to increment its Execution Counter for the table defined number of cycles. The HS Application will not start monitoring applications until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out).<BR>
 
          AppMon checks the execution count each cycle for each application defined in the Application Monitor Table. If the current value of the execution counter matches the value of the counter during the previous cycle then the "missing" count is decremented, otherwise the "missing" count is reset to the table defined threshold count value. If the "missing" count reaches zero, then the table defined action is taken.<BR>
 
@@ -153,12 +157,12 @@
 
          An application may appear in the Application Monitor Table more than once, allowing it to have multiple actions. This might be used to attempt to restart an application, and failing that (having a larger timeout threshold) perform a processor reset. Another use might be to take another action (perhaps a Message Action causing a Power-On Reset) if the HS Max Processor Reset limit has been reached. This ability also might be used for sending multiple Message Actions. <BR>
 
-         If an application is not currently running on the system, then it is considered to not be incrementing its counter (which does not exist). The HS Application itself does not know whether the Application is legitimately missing, or was incorrectly specified in the table, so it assumes that it is a real, missing application. <BR><BR>
+         If an application is not currently running on the system, then it is considered to not be incrementing its counter (which does not exist). The HS Application itself does not know whether the Application is legitimately missing, or was incorrectly specified in the table, so it assumes that it is a real, missing application. If Processor Reset Limiting is not set properly, such an application missing at startup could even lead to an infinite reset loop. <BR><BR>
 
 
          <H2> Event Monitor </H2>
 
-         The HS Application Event Monitor (EventMon), sometimes referred to as the Critical Events Monitor, is used to take action when a table defined application generates an event with a table defined Event ID number. The HS Application will not start monitoring events until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out). Note that EventMon does not monitor the contents of events, only the generation of them (by Event ID number). <BR>
+         The HS Application Event Monitor (EventMon), sometimes referred to as the Events Monitor, is used to take action when a table defined application generates an event with a table defined Event ID number. The HS Application will not start monitoring events until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out). Note that EventMon does not monitor the contents of events, only the generation of them (by Event ID number). <BR>
 
          EventMon can only monitor events that have not been filtered by Event Services (EVS). If EVS filters out an event, it will not be sent out, and so HS will never receive it.<BR>
 
@@ -218,8 +222,8 @@
     
     The following are HS subsystem requirements. Detailed requirements can be found in the Health and Safety Application Requirements Document.  
     
-    CFS-510: The CFS shall monitor application execution and take the appropriate action if one or more critical applications fails to execute.<BR>
-    CFS-511: The CFS shall monitor all event messages, looking for critical events and taking the appropriate action.<BR>
+    CFS-510: The CFS shall monitor application execution and take the appropriate action if one or more monitored applications fails to execute.<BR>
+    CFS-511: The CFS shall monitor all event messages, looking for monitored events and taking the appropriate action.<BR>
     CFS-512: The CFS shall maintain the watchdog timer.<BR>
     CFS-513: The CFS shall monitor and report the CPU Aliveness.<BR>
 
@@ -247,11 +251,36 @@
                 <LI> #HS_MAX_RESTART_ACTIONS - This parameter needs to be set with consideration to #CFE_ES_MAX_PROCESSOR_RESETS as if Executive Services performs a Power-On Reset, the count of resets stored by HS will be reset. (This may be desirable if HS reset limiting is not desired) <BR>
             </UL>
 
-         Calibration of CPU Utilization Monitoring can be performed in one of two ways: by using the ES Performance Monitor, or by capturing timing data to the Utilization Diagnostics array. In either case, the first step is to choose the #HS_UTIL_PER_INTERVAL_TOTAL value; this is equivalent to one full interval of CPU utilization, so if the interval was 1 second, and a value of 100 was used, then the value reported in telemetry would be the percentage. Alternatively a higher value (10000 or 100000) could provide higher resolution information, and could still be displayed on the ground in terms of percent with a decimal component. After this value is chosen, the next step is to determine how many Idle Child Task cycles there are in an interval. This is done by setting the configuration parameter #HS_UTIL_DIAG_MASK to allow the time to be recorded periodically while the idle task is running; for example a value of 0XFF would record the time every 256 cycles. To calibrate the time properly, two values must be used so that the overhead associated with recording the time is cancelled out (so for example, capturing time at 256 and 128 cycles, and then finding the difference will give the real time for performing 128 cycles). Good rates at which to record depend on the timing resolution and platform speed. Information is recorded both in an internal data structure (configurable size), and by the performance monitor using ID #HS_IDLETASK_PERF_ID . In either case, this information can be used to determine the time per Idle Task cycle. The calibration is then configured using the following equation: <BR>
 
-         HS_UTIL_PER_INTERVAL_TOTAL =  (((Max Number of Idle Task Cycles per Interval * #HS_UTIL_CONV_MULT1 ) / #HS_UTIL_CONV_DIV ) * #HS_UTIL_CONV_MULT2) <BR>
+         <H3>Health and Safety CPU Utilization Monitoring Customization</H3>
+         The Health and Safety application contains the file \c hs_custom.c which can be adapted to take advantage of platform specific functionality concerning CPU Utilization Monitoring. The delivered implementation contains a generic version which should work well on a variety of platforms, however it may be possible to obtain better accuracy or increase processing efficiency by modifying the contents. As the custom utilization monitoring function is called every HS cycle, and an interface to add additional commands is included, it could even be used as a way to add other capabilities to the HS application (e.g. offboard watchdog servicing, or floating point exception testing) instead of creating an entirely separate application. <BR>
 
-         The multiplication and division parameters should be set so as to prevent overflows (of 32 bit values) and using any other platform considerations.
+  This customizable section of code includes five required functions for interface purposes:
+  <UL>
+    <LI> #HS_CustomInit
+    <LI> #HS_CustomCommands
+    <LI> #HS_CustomMonitorUtilization
+    <LI> #HS_CustomGetUtil
+    <LI> #HS_CustomCleanup
+  </UL>
+
+        The remainder of this guide assumes that the generic hs_custom.c is being used when describing how to use and calibrate CPU Utilization Monitoring. <BR>
+
+         <H3>Health and Safety CPU Utilization Monitoring Calibration</H3>
+         
+
+
+         The first step in CPU Utilization Monitoring Calibration is to determine how many Idle Child Task cycles there are in a second (in the default case: one interval is one second). This is done by setting the Utilization Diagnostics Mask by command: for example a command parameter of 0xFF would record the time every 256 cycles. These times are stored in a circular buffer of a size determined by #HS_UTIL_TIME_DIAG_ARRAY_POWER (increasing this parameter will provide more samples, but use more memory). The Report Diagnostics command can then be sent (after a sufficient time to let the circular buffer perform a full cycle) to generate an event message containing the mask, and the four shortest intervals between time records, as well as how frequently those timed intervals occurred. Usually the desired value is the weighted average (based on frequencies) of the two lowest times, though common sense should be used as a sanity check. The Report Diagnostics command can be used multiple times to report additional captured times (the capturing continually runs through the circular buffer). The recorded time uses the microseconds field of #CFE_PSP_GetTime to determine the time, so the source of that timer will determine the precision and accuracy of the timing data. To calibrate the time properly, two values must be used so that the overhead associated with recording the time is cancelled out (so for example, capturing time at 256 and 128 cycles, and then finding the difference will give the real time for performing 128 cycles). When done collecting data, reset the mask to 0xFFFFFFFF. This makes sure that no timing data is captured, and so all cycles are of equal length.<BR>
+
+         Good rates at which to record depend on the timing resolution and platform speed. Time is recorded when the mask value is all 1s, so the mask values used should be of the form 2^n - 1 (e.g. 255 (0xFF), 2047 (Ox7FF)) to capture once out of 2^n cycles. As the calibration is occurring while the system is running, it is necessary to have large enough chunks of idle time to capture several times within a chunk; with high resolution timers on a fast platform, collecting good data may be possible even when the processor is mostly utilized, but with lower time resolution special testing may have to be done with other applications absent. Reported times of 0 imply that the mask is much too small relative to the resolution (though if all times are 0, the mask may be too large such that no times have been recorded, or that #CFE_PSP_GetTime was not configured properly for the platform). If the frequencies of all the lowest times are relatively low, it may imply that the mask is too large relative to the idle time blocks, or that CFE_PSP_GetTime is not running in constant time and the resolution is high enough to be affected by that (in which case either the lowest, or average of several lowest times can be used). Once the timing information has been acquired, it can be used to determine the time per Idle Child Task cycle, and from there, the number of Idle Child Task cycles per second.<BR>
+
+         On some platforms calibration can also be done using a logic analyzer with the performance monitor using ID #HS_IDLETASK_PERF_ID, potentially supplying much higher time resolution. In addition this marker can also be used by dumping performance data with different masks set which may (or may not) provide higher resolution timing data as the performance monitor uses a different timer.<BR>
+
+         The second step is to choose the #HS_UTIL_PER_INTERVAL_TOTAL value: this is equivalent to one full interval of CPU utilization, so if a value of 100 was used, then the value reported in telemetry would be the percentage. Alternatively a higher value (10000 or 100000) could provide higher resolution information if the calibration is of high enough precision and accuracy. The calibration is then configured using the following equation: <BR>
+
+         HS_UTIL_PER_INTERVAL_TOTAL =  (((Max Number of Idle Task Cycles per Second * #HS_UTIL_CONV_MULT1 ) / #HS_UTIL_CONV_DIV ) * #HS_UTIL_CONV_MULT2) <BR>
+
+         The multiplication and division parameters should be set so as to prevent overflows (of 32 bit values) and using any other platform considerations. These values can be set by command, but they also exist as configuration parameters so that if the values are known at compile time for a specific platform, no further calibration would be necessary.<BR>
 
          Also, please be aware that HS has a performance ID, #HS_APPMAIN_PERF_ID, that keeps track of the performance of the HS app.    
   
@@ -301,7 +330,7 @@
         
         The AMT is the configuration table for the HS Application Monitor, defining when to take action and what action to take.<BR>
         
-        The AMT consists of an array of records numbering #HS_MAX_CRITICAL_APPS . Each record contains field for: Application Name, Null Terminator, Cycle Count, and Action Type.<BR>
+        The AMT consists of an array of records numbering #HS_MAX_MONITORED_APPS . Each record contains field for: Application Name, Null Terminator, Cycle Count, and Action Type.<BR>
         
         <UL>
           <LI> The Application Name should be the name of the application as the system knows it: up to OS_MAX_API_NAME in length.
@@ -324,7 +353,7 @@
         
         The EMT is the configuration table for the HS Event Monitor, defining when to take action and what action to take.<BR>
         
-        The EMT consists of an array of records numbering #HS_MAX_CRITICAL_EVENTS . Each record contains field for: Application Name, Null Terminator, Event ID, and Action Type.<BR>
+        The EMT consists of an array of records numbering #HS_MAX_MONITORED_EVENTS . Each record contains field for: Application Name, Null Terminator, Event ID, and Action Type.<BR>
         
         <UL>
           <LI> The Application Name should be the name of the application as the system knows it: up to OS_MAX_API_NAME in length.

@@ -131,6 +131,10 @@ PROC $sc_$cpu_hs_appmon
 ;	Date		   Name		Description
 ;	06/22/09	Walt Moleski	Original Procedure.
 ;	01/12/11	Walt Moleski	Updated for HS 2.1.0.0
+;       09/16/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -215,6 +219,7 @@ LOCAL rawcmd, stream, index
 local HSAppName = HS_APP_NAME
 local ramDir = "RAM:0"
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
 
 ;; Table Names
 local AppMonTblName = HSAppName & "." & HS_AMT_TABLENAME
@@ -233,7 +238,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -262,7 +268,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 5
 
 ;; Event Monitoring Table
@@ -281,7 +287,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 5
 
 ;; Message Actions Table
@@ -300,7 +306,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 5
 
 ;; Execution Counter Table
@@ -319,7 +325,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 5
 
 write ";***********************************************************************"
@@ -368,12 +374,16 @@ if ($SC_$CPU_HS_CMDPC = 0) AND ($SC_$CPU_HS_CMDEC = 0) AND ;;
    ($SC_$CPU_HS_InvalidEVTAppCnt = 0) AND ;;
    ($SC_$CPU_HS_AppMonState = HS_APPMON_DEFAULT_STATE) AND ;;
    ($SC_$CPU_HS_EvtMonState = HS_EVENTMON_DEFAULT_STATE) AND ;;
+   ($SC_$CPU_HS_CPUHOGState = HS_CPUHOG_DEFAULT_STATE) AND ;;
    (p@$SC_$CPU_TST_HS_WatchdogFlag = "TRUE") AND ;;
    ($SC_$CPU_HS_CPUAliveState = HS_ALIVENESS_DEFAULT_STATE) then
   write "<*> Passed (8000) - Housekeeping telemetry initialized properly."
   ut_setrequirements HS_8000, "P"
   ;;***************************************************************************
-  ;; How do you check the Watchdog Timer ???
+  ;; The Watchdog Timer cannot be tested here and must be inspected in the fsw
+  ;; The following items will vary based on the mission settings and should be
+  ;; visually inspected after Power-ON:
+  ;;   $SC_$CPU_HS_CPUUtilAve; $SC_$CPU_HS_CPUUtilPeak; $SC_$CPU_HS_APPStatus
   ;;***************************************************************************
 else
   write "<!> Failed (8000) - Housekeeping telemetry NOT initialized properly at startup."
@@ -443,7 +453,7 @@ wait 5
 
 ;; Check that the Critical Application Monitoting Parameter is set to Disabled
 if (p@$SC_$CPU_HS_AppMonState = "Disabled") then
-  write "<*> Passed (2002) - Telemetry indicates Application Monitoring State is Enabled."
+  write "<*> Passed (2002) - Telemetry indicates Application Monitoring State is Disabled."
   ut_setrequirements HS_2002, "P"
 else
   write "<!> Failed (2002) - Telemetry indicates incorrect Application Monitoring State of ", p@$SC_$CPU_HS_AppMonState,". Expected Disabled."
@@ -564,7 +574,7 @@ endif
 
 wait 5
 
-;; Check that the Critical Application Monitoting Parameter is set to Disabled
+;; Check that the Critical Application Monitoting Parameter is set to Enabled
 if (p@$SC_$CPU_HS_AppMonState = "Enabled") then
   write "<*> Passed (2001) - Telemetry indicates Application Monitoring State is Enabled."
   ut_setrequirements HS_2001, "P"
@@ -576,7 +586,7 @@ endif
 write ";***********************************************************************"
 write ";  Step 2.5: Dump the Critical Application Table."
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir,AppMonTblName, "A", "$cpu_hs_dumpamt", "$CPU", amtAPID)
+s get_tbl_to_cvt(ramDir,AppMonTblName, "A", "$cpu_hs_dumpamt", hostCPU, amtAPID)
 wait 5
 
 ;; Check that each application in the table is executing
@@ -602,7 +612,7 @@ s $sc_$cpu_hs_amt2
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt2","$CPU")
+s load_table("hs_def_amt2",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -674,7 +684,8 @@ write ";*********************************************************************"
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -722,7 +733,7 @@ s $sc_$cpu_hs_amt3
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt3","$CPU")
+s load_table("hs_def_amt3",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -816,7 +827,7 @@ s $sc_$cpu_hs_amt4
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt4","$CPU")
+s load_table("hs_def_amt4",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -913,10 +924,11 @@ else
 endif
 
 ;; Check that the HK counter incremented
-if ($SC_$CPU_HS_MsgActCnt = expectedMsgActCtr) then
+ut_tlmwait $SC_$CPU_HS_MsgActCnt, {expectedMsgActCtr}
+if (UT_TW_Status = UT_Success) then
   write "<*> Passed - SB Message Action counter incremented."
 else
-  write "<!> Failed - SB Message Action counter did not increment as expected."
+  write "<!> Failed - SB Message Action counter did not increment as expected. Got ",$SC_$CPU_HS_MsgActCnt,"; Expected ",expectedMsgActCtr
 endif
 
 wait 5
@@ -967,7 +979,7 @@ write ";*********************************************************************"
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt2","$CPU")
+s load_table("hs_def_amt2",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1099,7 +1111,7 @@ s $sc_$cpu_hs_amt5
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt5","$CPU")
+s load_table("hs_def_amt5",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1162,7 +1174,7 @@ enddo
 
 write "==> Default LC Watchpoint Table filename = '",wdtFileName,"'"
 
-s ftp_file(ramDir, "lc_def_wdt1.tbl", wdtFileName, "$CPU", "P")
+s ftp_file(ramDir, "lc_def_wdt1.tbl", wdtFileName, hostCPU, "P")
 
 s $SC_$CPU_lc_adt1
 
@@ -1178,7 +1190,7 @@ enddo
 
 write "==> Default LC Actionpoint Table filename = '",adtFileName,"'"
 
-s ftp_file(ramDir, "lc_def_adt1.tbl", adtFileName, "$CPU", "P")
+s ftp_file(ramDir, "lc_def_adt1.tbl", adtFileName, hostCPU, "P")
 
 write ";*********************************************************************"
 write ";  Step 4.3.2: Start the LC app."
@@ -1255,7 +1267,7 @@ s $sc_$cpu_hs_amt6
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt6","$CPU")
+s load_table("hs_def_amt6",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1329,7 +1341,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -1345,7 +1358,7 @@ write ";  Step 4.10.2: Start the LC app."
 write ";*********************************************************************"
 ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
 
-s load_start_app ("LC","$CPU", "LC_AppMain")
+s load_start_app ("LC",hostCPU, "LC_AppMain")
 
 ; Wait for app startup events
 ut_tlmwait  $SC_$CPU_find_event[1].num_found_messages, 1
@@ -1393,7 +1406,7 @@ s $sc_$cpu_hs_amt7
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt7","$CPU")
+s load_table("hs_def_amt7",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1487,7 +1500,7 @@ s $sc_$cpu_hs_amt8
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt8","$CPU")
+s load_table("hs_def_amt8",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1583,10 +1596,11 @@ else
 endif
 
 ;; Check that the HK counter incremented
-if ($SC_$CPU_HS_MsgActCnt = expectedMsgActCtr) then
+ut_tlmwait $SC_$CPU_HS_MsgActCnt, {expectedMsgActCtr}
+if (UT_TW_Status = UT_Success) then
   write "<*> Passed - SB Message Action counter incremented."
 else
-  write "<!> Failed - SB Message Action counter did not increment as expected."
+  write "<!> Failed - SB Message Action counter did not increment as expected. Got ",$SC_$CPU_HS_MsgActCnt,"; Expected ",expectedMsgActCtr
 endif
 
 wait 5
@@ -1634,7 +1648,7 @@ write ";*********************************************************************"
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt6","$CPU")
+s load_table("hs_def_amt6",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1730,7 +1744,7 @@ s $sc_$cpu_hs_amt9
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt9","$CPU")
+s load_table("hs_def_amt9",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1803,19 +1817,19 @@ endif
 write ";***********************************************************************"
 write ";  Step 5.4: Dump the Critical Application Table."
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, AppMonTblName, "A", "$cpu_hs_dumpamt", "$CPU", amtAPID)
+s get_tbl_to_cvt(ramDir, AppMonTblName, "A", "$cpu_hs_dumpamt", hostCPU, amtAPID)
 wait 5
 
 local index
 ;; Check that all the application slots are filled
-for index = 1 to HS_MAX_CRITICAL_APPS do
+for index = 1 to HS_MAX_MONITORED_APPS do
   if ($SC_$CPU_HS_AMT[index].AppName = "") then
     break
   endif
 enddo
 
-;; If all the table entries were filled, i will = HS_MAX_CRITICAL_APPS
-if (index = HS_MAX_CRITICAL_APPS+1) then
+;; If all the table entries were filled, i will = HS_MAX_MONITORED_APPS
+if (index = HS_MAX_MONITORED_APPS+1) then
   write "<*> Passed (2003) - HS supported the maximum defined Critical Applications"
   ut_setrequirements HS_2003, "P"
 else
@@ -1833,7 +1847,7 @@ s $sc_$cpu_hs_amt10
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt10","$CPU")
+s load_table("hs_def_amt10",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1939,7 +1953,7 @@ s $sc_$cpu_hs_amt13
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt13","$CPU")
+s load_table("hs_def_amt13",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1983,7 +1997,7 @@ else
 endif
 
 write ";*********************************************************************"
-write ";  Step 5.7: Activate the Critical Application Table loaded above. "
+write ";  Step 5.11: Activate the Critical Application Table loaded above. "
 write ";*********************************************************************"
 ut_setupevents "$SC", "$CPU", "CFE_TBL",CFE_TBL_UPDATE_SUCCESS_INF_EID,"INFO",1
 
@@ -2021,7 +2035,7 @@ s $sc_$cpu_hs_amt11
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Application Table
-s load_table("hs_def_amt11","$CPU")
+s load_table("hs_def_amt11",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -2073,13 +2087,13 @@ write ";  Step 6.3: Remove the default Critical Application Table from the "
 write ";  onboard processor."
 write ";*********************************************************************"
 ;; Remove the default table files
-s ftp_file (defTblDir,"na",amtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",amtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",emtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",emtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",matFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",matFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",xctFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",xctFileName,hostCPU,"R")
 wait 5
 
 write ";*********************************************************************"
@@ -2092,7 +2106,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -2148,7 +2163,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

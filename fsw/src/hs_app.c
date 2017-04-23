@@ -1,8 +1,8 @@
 /************************************************************************
 ** File:
-**   $Id: hs_app.c 1.19 2015/03/03 12:16:03EST sstrege Exp  $
-**
-**   Copyright © 2007-2014 United States Government as represented by the 
+**   $Id: hs_app.c 1.7 2016/09/07 18:49:19EDT mdeschu Exp  $
+** 
+**   Copyright ï¿½ 2007-2016 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
 **   All Other Rights Reserved.  
 **
@@ -17,6 +17,29 @@
 **   aliveness indication, and watchdog servicing.
 **
 **   $Log: hs_app.c  $
+**   Revision 1.7 2016/09/07 18:49:19EDT mdeschu 
+**   All CFE_EVS_SendEvents with format warning arguments were explicitly cast
+**   Revision 1.6 2016/08/29 23:40:08EDT mdeschu 
+**   Checkin missing change to hs_app.c from babelfish ticket #26
+**   Revision 1.5 2016/08/16 13:26:58EDT mdeschu 
+**   Remove initialization of Status in HS_AppInit as the value is never used
+**   Revision 1.4 2016/08/05 09:43:39EDT mdeschu 
+**   Ticket #26: Fix HS build errors with strict settings
+**   
+**       Fix minor issues causing build to fail:
+**   
+**           Extra argument in CFE_SendEvent() call
+**           Unused variable in HS_CustomCleanup()
+**   Revision 1.3 2016/05/16 17:28:39EDT czogby 
+**   Move function prototype from hs_app.c file to hs_app.h file
+**   Revision 1.2 2015/11/12 14:25:27EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.22 2015/05/04 11:59:10EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.21 2015/05/04 10:59:55EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.20 2015/05/01 16:48:31EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.19 2015/03/03 12:16:03EST sstrege 
 **   Added copyright information
 **   Revision 1.18 2011/10/13 18:47:00EDT aschoeni 
@@ -81,108 +104,6 @@
 *************************************************************************/
 HS_AppData_t     HS_AppData;
 
-/************************************************************************
-** Local function prototypes
-*************************************************************************/
-/************************************************************************/
-/** \brief Initialize the CFS Health and Safety (HS) application
-**
-**  \par Description
-**       Health and Safety application initialization routine. This
-**       function performs all the required startup steps to
-**       initialize HS data structures and get the application
-**       registered with the cFE services so it can begin to receive
-**       command messages.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \returns
-**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
-**  \retstmt Return codes from #HS_SbInit       \endcode
-**  \retstmt Return codes from #HS_TblInit      \endcode
-**  \endreturns
-**
-*************************************************************************/
-int32 HS_AppInit(void);
-
-/************************************************************************/
-/** \brief Initialize Software Bus
-**
-**  \par Description
-**       This function performs the steps required to setup the
-**       cFE software bus for use by the HS application
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \returns
-**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
-**  \retstmt Return codes from #CFE_SB_CreatePipe  \endcode
-**  \retstmt Return codes from #CFE_SB_Subscribe  \endcode
-**  \endreturns
-**
-*************************************************************************/
-int32 HS_SbInit(void);
-
-/************************************************************************/
-/** \brief Initialize cFE Table Services
-**
-**  \par Description
-**       This function performs those steps required to initialize the
-**       relationship between the HS App and the cFE Table Services.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \returns
-**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
-**  \retstmt Return codes from #CFE_TBL_Register         \endcode
-**  \retstmt Return codes from #CFE_TBL_GetAddress       \endcode
-**  \endreturns
-**
-*************************************************************************/
-int32 HS_TblInit(void);
-
-/************************************************************************/
-/** \brief Perform Normal Periodic Processing
-**
-**  \par Description
-**       This function performs the normal Health and Safety monitoring
-**       functions including application, event and execution counters,
-**       as well as servicing the watchdog, outputing the aliveness 
-**       indicator, and receiving commands or HK requests.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \returns
-**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
-**  \retstmt Return codes from #HS_AcquirePointers       \endcode
-**  \retstmt Return codes from #HS_ProcessCommands       \endcode
-**  \endreturns
-**
-*************************************************************************/
-int32 HS_ProcessMain(void);
-
-/************************************************************************/
-/** \brief Process commands received from cFE Software Bus
-**
-**  \par Description
-**       This function pulls messages from command pipe and processes
-**       them accordingly.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \returns
-**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
-**  \retstmt Return codes from #CFE_SB_RcvMsg            \endcode
-**  \endreturns
-**
-*************************************************************************/
-int32 HS_ProcessCommands(void);
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
 /* HS application entry point and main process loop                */
@@ -238,7 +159,7 @@ void HS_AppMain(void)
           if (Status != CFE_SUCCESS)
           {
              CFE_EVS_SendEvent(HS_SUB_EVS_ERR_EID, CFE_EVS_ERROR,
-                 "Error Subscribing to Events,RC=0x%08X",Status);
+                 "Error Subscribing to Events,RC=0x%08X",(unsigned int)Status);
           }
        }
     }
@@ -312,12 +233,12 @@ void HS_AppMain(void)
         ** Send an event describing the reason for the termination
         */
         CFE_EVS_SendEvent(HS_APP_EXIT_EID, CFE_EVS_CRITICAL,
-                          "Application Terminating, err = 0x%08X", Status);
+                          "Application Terminating, err = 0x%08X", (unsigned int)Status);
 
         /*
         ** In case cFE Event Services is not working
         */
-        CFE_ES_WriteToSysLog("HS App: Application Terminating, ERR = 0x%08X\n", Status);
+        CFE_ES_WriteToSysLog("HS App: Application Terminating, ERR = 0x%08X\n", (unsigned int)Status);
     }
 
     HS_CustomCleanup();
@@ -341,7 +262,7 @@ void HS_AppMain(void)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int32 HS_AppInit(void)
 {
-    int32       Status = CFE_SUCCESS;
+    int32       Status;
 
     /* 
     ** Initialize operating data to default states...
@@ -381,7 +302,7 @@ int32 HS_AppInit(void)
     Status = CFE_EVS_Register (NULL, 0, CFE_EVS_BINARY_FILTER);
     if (Status != CFE_SUCCESS)
     {
-        CFE_ES_WriteToSysLog("HS App: Error Registering For Event Services, RC = 0x%08X\n", Status);
+        CFE_ES_WriteToSysLog("HS App: Error Registering For Event Services, RC = 0x%08X\n", (unsigned int)Status);
         return (Status);
     }
 
@@ -410,7 +331,7 @@ int32 HS_AppInit(void)
                 ** Report error restoring data
                 */
                 CFE_EVS_SendEvent(HS_CDS_CORRUPT_ERR_EID, CFE_EVS_ERROR, 
-                                  "Data in CDS was corrupt, initializing resets data", Status);
+                                  "Data in CDS was corrupt, initializing resets data");
                 /* 
                 ** If data was corrupt, initialize data
                 */
@@ -424,7 +345,7 @@ int32 HS_AppInit(void)
             ** Report error restoring data
             */
             CFE_EVS_SendEvent(HS_CDS_RESTORE_ERR_EID, CFE_EVS_ERROR, 
-                              "Failed to restore data from CDS (Err=0x%08x), initializing resets data", Status);
+                              "Failed to restore data from CDS (Err=0x%08x), initializing resets data", (unsigned int)Status);
             /* 
             ** If data could not be retrieved, initialize data
             */
@@ -513,7 +434,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_CR_CMD_PIPE_ERR_EID, CFE_EVS_ERROR,
-              "Error Creating SB Command Pipe,RC=0x%08X",Status);
+              "Error Creating SB Command Pipe,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -522,7 +443,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_CR_EVENT_PIPE_ERR_EID, CFE_EVS_ERROR,
-              "Error Creating SB Event Pipe,RC=0x%08X",Status);
+              "Error Creating SB Event Pipe,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -531,7 +452,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_CR_WAKEUP_PIPE_ERR_EID, CFE_EVS_ERROR,
-              "Error Creating SB Wakeup Pipe,RC=0x%08X",Status);
+              "Error Creating SB Wakeup Pipe,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -540,7 +461,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_SUB_REQ_ERR_EID, CFE_EVS_ERROR,
-            "Error Subscribing to HK Request,RC=0x%08X",Status);
+            "Error Subscribing to HK Request,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -549,7 +470,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_SUB_CMD_ERR_EID, CFE_EVS_ERROR,
-            "Error Subscribing to Gnd Cmds,RC=0x%08X",Status);
+            "Error Subscribing to Gnd Cmds,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -558,7 +479,7 @@ int32 HS_SbInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_SUB_WAKEUP_ERR_EID, CFE_EVS_ERROR,
-            "Error Subscribing to Wakeup,RC=0x%08X",Status);
+            "Error Subscribing to Wakeup,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -580,8 +501,8 @@ int32 HS_TblInit(void)
     uint32      TableSize;
     int32       Status = CFE_SUCCESS;
 
-    /* Register The HS Critical Applications Monitor Table */
-    TableSize = HS_MAX_CRITICAL_APPS * sizeof (HS_AMTEntry_t);
+    /* Register The HS Applications Monitor Table */
+    TableSize = HS_MAX_MONITORED_APPS * sizeof (HS_AMTEntry_t);
     Status = CFE_TBL_Register (&HS_AppData.AMTableHandle,
                                 HS_AMT_TABLENAME,
                                 TableSize,
@@ -591,12 +512,12 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_AMT_REG_ERR_EID, CFE_EVS_ERROR,
-            "Error Registering AppMon Table,RC=0x%08X",Status);
+            "Error Registering AppMon Table,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
-    /* Register The HS Critical Events Monitor Table */
-    TableSize = HS_MAX_CRITICAL_EVENTS * sizeof (HS_EMTEntry_t);
+    /* Register The HS Events Monitor Table */
+    TableSize = HS_MAX_MONITORED_EVENTS * sizeof (HS_EMTEntry_t);
     Status = CFE_TBL_Register (&HS_AppData.EMTableHandle,
                                 HS_EMT_TABLENAME,
                                 TableSize,
@@ -606,7 +527,7 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_EMT_REG_ERR_EID, CFE_EVS_ERROR,
-            "Error Registering EventMon Table,RC=0x%08X",Status);
+            "Error Registering EventMon Table,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -621,7 +542,7 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_MAT_REG_ERR_EID, CFE_EVS_ERROR,
-            "Error Registering MsgActs Table,RC=0x%08X",Status);
+            "Error Registering MsgActs Table,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -637,7 +558,7 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_XCT_REG_ERR_EID, CFE_EVS_ERROR,
-            "Error Registering ExeCount Table,RC=0x%08X",Status);
+            "Error Registering ExeCount Table,RC=0x%08X",(unsigned int)Status);
         return (Status);
     }
 
@@ -648,36 +569,36 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_XCT_LD_ERR_EID, CFE_EVS_ERROR,
-            "Error Loading ExeCount Table,RC=0x%08X",Status);
+            "Error Loading ExeCount Table,RC=0x%08X",(unsigned int)Status);
         HS_AppData.ExeCountState = HS_STATE_DISABLED;
     }
 #endif
 
-    /* Load the HS Critical Applications Monitor Table */
+    /* Load the HS Applications Monitor Table */
     Status = CFE_TBL_Load (HS_AppData.AMTableHandle,
                            CFE_TBL_SRC_FILE,
                            (const void *) HS_AMT_FILENAME);
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_AMT_LD_ERR_EID, CFE_EVS_ERROR,
-            "Error Loading AppMon Table,RC=0x%08X",Status);
+            "Error Loading AppMon Table,RC=0x%08X",(unsigned int)Status);
         HS_AppData.CurrentAppMonState = HS_STATE_DISABLED;
         CFE_EVS_SendEvent (HS_DISABLE_APPMON_ERR_EID, CFE_EVS_ERROR,
-                           "Critical Application Monitoring Disabled due to Table Load Failure");
+                           "Application Monitoring Disabled due to Table Load Failure");
         HS_AppData.AppMonLoaded = HS_STATE_DISABLED;
     }
 
-    /* Load the HS Critical Events Monitor Table */
+    /* Load the HS Events Monitor Table */
     Status = CFE_TBL_Load (HS_AppData.EMTableHandle,
                            CFE_TBL_SRC_FILE,
                            (const void *) HS_EMT_FILENAME);
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_EMT_LD_ERR_EID, CFE_EVS_ERROR,
-            "Error Loading EventMon Table,RC=0x%08X",Status);
+            "Error Loading EventMon Table,RC=0x%08X",(unsigned int)Status);
         HS_AppData.CurrentEventMonState = HS_STATE_DISABLED;
         CFE_EVS_SendEvent (HS_DISABLE_EVENTMON_ERR_EID, CFE_EVS_ERROR,
-                           "Critical Event Monitoring Disabled due to Table Load Failure");
+                           "Event Monitoring Disabled due to Table Load Failure");
         HS_AppData.EventMonLoaded = HS_STATE_DISABLED;
     }
 
@@ -688,7 +609,7 @@ int32 HS_TblInit(void)
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(HS_MAT_LD_ERR_EID, CFE_EVS_ERROR,
-            "Error Loading MsgActs Table,RC=0x%08X",Status);
+            "Error Loading MsgActs Table,RC=0x%08X",(unsigned int)Status);
         HS_AppData.MsgActsState = HS_STATE_DISABLED;
     }
 
@@ -729,7 +650,7 @@ int32 HS_ProcessMain(void)
     }
 
     /* 
-    ** Monitor Critical Applications
+    ** Monitor Applications
     */
     if (HS_AppData.CurrentAppMonState == HS_STATE_ENABLED)
     {

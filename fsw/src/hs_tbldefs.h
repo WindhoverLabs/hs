@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_tbldefs.h 1.3 2015/03/03 12:16:09EST sstrege Exp  $
+**   $Id: hs_tbldefs.h 1.2 2015/11/12 14:25:25EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -24,6 +24,8 @@
 **   ADD THEM TO hs_tbl.h IF NEEDED!
 **
 **   $Log: hs_tbldefs.h  $
+**   Revision 1.2 2015/11/12 14:25:25EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
 **   Revision 1.3 2015/03/03 12:16:09EST sstrege 
 **   Added copyright information
 **   Revision 1.2 2009/05/04 17:44:29EDT aschoeni 

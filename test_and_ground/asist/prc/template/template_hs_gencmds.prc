@@ -170,6 +170,7 @@ local cfe_requirements[0 .. ut_req_array_size] = ["HS_1000","HS_1001","HS_1002",
 LOCAL rawcmd, stream, index
 local HSAppName = HS_APP_NAME
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
 
 write ";***********************************************************************"
 write ";  Step 1.0: Health and Safety Test Setup."
@@ -182,7 +183,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -210,7 +212,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -229,7 +231,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -248,7 +250,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -267,7 +269,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
@@ -1209,7 +1211,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

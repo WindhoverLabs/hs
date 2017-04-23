@@ -1,9 +1,12 @@
 ###############################################################################
 # File: CFS Health and Safety (HS) Application Makefile
 #
-# $Id: Makefile 1.8 2011/10/13 18:45:32EDT aschoeni Exp  $
+# $Id: Makefile 1.1 2015/07/26 02:05:03EDT rperera Exp  $
 #
 # $Log: Makefile  $
+# Revision 1.1 2015/07/26 02:05:03EDT rperera 
+# Initial revision
+# Member added to project /CFS-APPs-PROJECT/hs/fsw/for_build/project.pj
 # Revision 1.8 2011/10/13 18:45:32EDT aschoeni 
 # Updated for hs utilization calibration functions
 # Revision 1.7 2010/09/29 18:26:03EDT aschoeni 

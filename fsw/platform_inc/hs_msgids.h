@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_msgids.h 1.3 2015/03/03 12:16:04EST sstrege Exp  $
+**   $Id: hs_msgids.h 1.2 2015/11/12 14:25:23EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,8 @@
 ** Notes:
 **
 **   $Log: hs_msgids.h  $
+**   Revision 1.2 2015/11/12 14:25:23EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
 **   Revision 1.3 2015/03/03 12:16:04EST sstrege 
 **   Added copyright information
 **   Revision 1.2 2009/05/04 17:44:28EDT aschoeni 

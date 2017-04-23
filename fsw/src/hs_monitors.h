@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_monitors.h 1.4 2015/03/03 12:16:13EST sstrege Exp  $
+**   $Id: hs_monitors.h 1.2 2015/11/12 14:25:13EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -18,6 +18,8 @@
 ** Notes:
 **
 **   $Log: hs_monitors.h  $
+**   Revision 1.2 2015/11/12 14:25:13EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
 **   Revision 1.4 2015/03/03 12:16:13EST sstrege 
 **   Added copyright information
 **   Revision 1.3 2010/09/29 18:27:51EDT aschoeni 

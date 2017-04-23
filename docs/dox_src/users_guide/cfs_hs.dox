@@ -23,6 +23,10 @@
 
   \verbatim  
   $Log: cfs_hs.dox  $
+  Revision 1.2 2015/11/12 14:25:18EST wmoleski 
+  Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+  Revision 1.5 2015/05/04 16:08:39EDT lwalling 
+  Remove references to critical from application and event monitors
   Revision 1.4 2011/10/24 14:51:31EDT aschoeni 
   Updated User Guild dox
   Revision 1.3 2010/11/23 18:24:35EST aschoeni 
@@ -147,7 +151,7 @@
 
          <H2> Application Monitor </H2>
 
-         The HS Application Application Monitor (AppMon), sometimes referred to as the Critical Applications Monitor, is used to take action when a table defined application fails to increment its Execution Counter for the table defined number of cycles. The HS Application will not start monitoring applications until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out).<BR>
+         The HS Application Application Monitor (AppMon), sometimes referred to as the Applications Monitor, is used to take action when a table defined application fails to increment its Execution Counter for the table defined number of cycles. The HS Application will not start monitoring applications until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out).<BR>
 
          AppMon checks the execution count each cycle for each application defined in the Application Monitor Table. If the current value of the execution counter matches the value of the counter during the previous cycle then the "missing" count is decremented, otherwise the "missing" count is reset to the table defined threshold count value. If the "missing" count reaches zero, then the table defined action is taken.<BR>
 
@@ -160,7 +164,7 @@
 
          <H2> Event Monitor </H2>
 
-         The HS Application Event Monitor (EventMon), sometimes referred to as the Critical Events Monitor, is used to take action when a table defined application generates an event with a table defined Event ID number. The HS Application will not start monitoring events until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out). Note that EventMon does not monitor the contents of events, only the generation of them (by Event ID number). <BR>
+         The HS Application Event Monitor (EventMon), sometimes referred to as the Events Monitor, is used to take action when a table defined application generates an event with a table defined Event ID number. The HS Application will not start monitoring events until system startup has been completed (#CFE_ES_WaitForStartupSync returns, whether because the system is finished starting up, or because it timed out). Note that EventMon does not monitor the contents of events, only the generation of them (by Event ID number). <BR>
 
          EventMon can only monitor events that have not been filtered by Event Services (EVS). If EVS filters out an event, it will not be sent out, and so HS will never receive it.<BR>
 
@@ -220,8 +224,8 @@
     
     The following are HS subsystem requirements. Detailed requirements can be found in the Health and Safety Application Requirements Document.  
     
-    CFS-510: The CFS shall monitor application execution and take the appropriate action if one or more critical applications fails to execute.<BR>
-    CFS-511: The CFS shall monitor all event messages, looking for critical events and taking the appropriate action.<BR>
+    CFS-510: The CFS shall monitor application execution and take the appropriate action if one or more monitored applications fails to execute.<BR>
+    CFS-511: The CFS shall monitor all event messages, looking for monitored events and taking the appropriate action.<BR>
     CFS-512: The CFS shall maintain the watchdog timer.<BR>
     CFS-513: The CFS shall monitor and report the CPU Aliveness.<BR>
 
@@ -328,7 +332,7 @@
         
         The AMT is the configuration table for the HS Application Monitor, defining when to take action and what action to take.<BR>
         
-        The AMT consists of an array of records numbering #HS_MAX_CRITICAL_APPS . Each record contains field for: Application Name, Null Terminator, Cycle Count, and Action Type.<BR>
+        The AMT consists of an array of records numbering #HS_MAX_MONITORED_APPS . Each record contains field for: Application Name, Null Terminator, Cycle Count, and Action Type.<BR>
         
         <UL>
           <LI> The Application Name should be the name of the application as the system knows it: up to OS_MAX_API_NAME in length.
@@ -351,7 +355,7 @@
         
         The EMT is the configuration table for the HS Event Monitor, defining when to take action and what action to take.<BR>
         
-        The EMT consists of an array of records numbering #HS_MAX_CRITICAL_EVENTS . Each record contains field for: Application Name, Null Terminator, Event ID, and Action Type.<BR>
+        The EMT consists of an array of records numbering #HS_MAX_MONITORED_EVENTS . Each record contains field for: Application Name, Null Terminator, Event ID, and Action Type.<BR>
         
         <UL>
           <LI> The Application Name should be the name of the application as the system knows it: up to OS_MAX_API_NAME in length.

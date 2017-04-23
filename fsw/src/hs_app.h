@@ -1,8 +1,8 @@
 /************************************************************************
 ** File:
-**   $Id: hs_app.h 1.10 2015/03/03 12:16:00EST sstrege Exp  $
+**   $Id: hs_app.h 1.3 2016/05/16 17:28:40EDT czogby Exp  $
 **
-**   Copyright © 2007-2014 United States Government as represented by the 
+**   Copyright © 2007-2016 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
 **   All Other Rights Reserved.  
 **
@@ -18,6 +18,16 @@
 ** Notes:
 **
 **   $Log: hs_app.h  $
+**   Revision 1.3 2016/05/16 17:28:40EDT czogby 
+**   Move function prototype from hs_app.c file to hs_app.h file
+**   Revision 1.2 2015/11/12 14:25:26EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.13 2015/05/04 11:59:07EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.12 2015/05/04 10:59:53EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.11 2015/05/01 16:48:31EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.10 2015/03/03 12:16:00EST sstrege 
 **   Added copyright information
 **   Revision 1.9 2011/10/13 18:45:07EDT aschoeni 
@@ -100,8 +110,8 @@ typedef struct
     CFE_SB_PipeId_t         EventPipe;/**< \brief Pipe Id for HK event pipe */
     uint8          ServiceWatchdogFlag;/**< \brief Flag of current watchdog servicing state */
 
-    uint8    CurrentAppMonState;/**< \brief Status of HS Critical Application Monitor */
-    uint8    CurrentEventMonState;/**< \brief Status of HS Critical Events Monitor */
+    uint8    CurrentAppMonState;/**< \brief Status of HS Application Monitor */
+    uint8    CurrentEventMonState;/**< \brief Status of HS Events Monitor */
     uint8    CurrentAlivenessState;/**< \brief Status of HS Aliveness Indicator */
     uint8    ExeCountState;/**< \brief Status of Execution Counter Table */
 
@@ -119,11 +129,11 @@ typedef struct
     uint32   EventsMonitoredCount;/**< \brief Total count of event messages monitored */
 
     uint16   MsgActCooldown[HS_MAX_MSG_ACT_TYPES];/**< \brief Counts until Message Actions is available */
-    uint16   AppMonCheckInCountdown[HS_MAX_CRITICAL_APPS];/**< \brief Counts until Application Monitor times out */
+    uint16   AppMonCheckInCountdown[HS_MAX_MONITORED_APPS];/**< \brief Counts until Application Monitor times out */
 
-    uint32   AppMonEnables[((HS_MAX_CRITICAL_APPS - 1) / HS_BITS_PER_APPMON_ENABLE)+1];/**< \brief AppMon state by monitor */
+    uint32   AppMonEnables[((HS_MAX_MONITORED_APPS - 1) / HS_BITS_PER_APPMON_ENABLE)+1];/**< \brief AppMon state by monitor */
 
-    uint32   AppMonLastExeCount[HS_MAX_CRITICAL_APPS];/**< \brief Last Execution Count for application being checked */
+    uint32   AppMonLastExeCount[HS_MAX_MONITORED_APPS];/**< \brief Last Execution Count for application being checked */
 
     uint32   AlivenessCounter;/**< \brief Current Count towards the CPU Aliveness output period */
 
@@ -139,8 +149,8 @@ typedef struct
     uint32   UtilCpuAvg;/**< \brief Current CPU Utilization Average */
     uint32   UtilCpuPeak;/**< \brief Current CPU Utilization Peak */
 
-    CFE_TBL_Handle_t        AMTableHandle;/**< \brief Critical Apps table handle */
-    CFE_TBL_Handle_t        EMTableHandle;/**< \brief Critical Events table handle */
+    CFE_TBL_Handle_t        AMTableHandle;/**< \brief Apps Monitor table handle */
+    CFE_TBL_Handle_t        EMTableHandle;/**< \brief Events Monitor table handle */
     CFE_TBL_Handle_t        MATableHandle;/**< \brief Message Actions table handle */
 
 #if HS_MAX_EXEC_CNT_SLOTS != 0
@@ -148,8 +158,8 @@ typedef struct
     HS_XCTEntry_t   *XCTablePtr;/**< \brief Ptr to Execution Counters table entry */
 #endif
 
-    HS_AMTEntry_t   *AMTablePtr;/**< \brief Ptr to Critical Apps table entry */
-    HS_EMTEntry_t   *EMTablePtr;/**< \brief Ptr to Critical Events table entry */
+    HS_AMTEntry_t   *AMTablePtr;/**< \brief Ptr to Apps Monitor table entry */
+    HS_EMTEntry_t   *EMTablePtr;/**< \brief Ptr to Events Monitor table entry */
     HS_MATEntry_t   *MATablePtr;/**< \brief Ptr to Message Actions table entry */
 
     CFE_ES_CDSHandle_t MyCDSHandle;/* \brief Handle to CDS memory block */
@@ -181,6 +191,105 @@ extern HS_AppData_t     HS_AppData;
 **
 *************************************************************************/
 void HS_AppMain(void);
+
+/************************************************************************/
+/** \brief Initialize the CFS Health and Safety (HS) application
+**
+**  \par Description
+**       Health and Safety application initialization routine. This
+**       function performs all the required startup steps to
+**       initialize HS data structures and get the application
+**       registered with the cFE services so it can begin to receive
+**       command messages.
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+**  \returns
+**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+**  \retstmt Return codes from #HS_SbInit       \endcode
+**  \retstmt Return codes from #HS_TblInit      \endcode
+**  \endreturns
+**
+*************************************************************************/
+int32 HS_AppInit(void);
+
+/************************************************************************/
+/** \brief Initialize Software Bus
+**
+**  \par Description
+**       This function performs the steps required to setup the
+**       cFE software bus for use by the HS application
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+**  \returns
+**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+**  \retstmt Return codes from #CFE_SB_CreatePipe  \endcode
+**  \retstmt Return codes from #CFE_SB_Subscribe  \endcode
+**  \endreturns
+**
+*************************************************************************/
+int32 HS_SbInit(void);
+
+/************************************************************************/
+/** \brief Initialize cFE Table Services
+**
+**  \par Description
+**       This function performs those steps required to initialize the
+**       relationship between the HS App and the cFE Table Services.
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+**  \returns
+**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+**  \retstmt Return codes from #CFE_TBL_Register         \endcode
+**  \retstmt Return codes from #CFE_TBL_GetAddress       \endcode
+**  \endreturns
+**
+*************************************************************************/
+int32 HS_TblInit(void);
+
+/************************************************************************/
+/** \brief Perform Normal Periodic Processing
+**
+**  \par Description
+**       This function performs the normal Health and Safety monitoring
+**       functions including application, event and execution counters,
+**       as well as servicing the watchdog, outputing the aliveness 
+**       indicator, and receiving commands or HK requests.
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+**  \returns
+**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+**  \retstmt Return codes from #HS_AcquirePointers       \endcode
+**  \retstmt Return codes from #HS_ProcessCommands       \endcode
+**  \endreturns
+**
+*************************************************************************/
+int32 HS_ProcessMain(void);
+
+/************************************************************************/
+/** \brief Process commands received from cFE Software Bus
+**
+**  \par Description
+**       This function pulls messages from command pipe and processes
+**       them accordingly.
+**
+**  \par Assumptions, External Events, and Notes:
+**       None
+**
+**  \returns
+**  \retcode #CFE_SUCCESS  \retdesc \copydoc CFE_SUCCESS \endcode
+**  \retstmt Return codes from #CFE_SB_RcvMsg            \endcode
+**  \endreturns
+**
+*************************************************************************/
+int32 HS_ProcessCommands(void);
 
 #endif /* _hs_app_h_ */
 

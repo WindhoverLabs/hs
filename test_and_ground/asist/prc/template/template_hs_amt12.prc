@@ -95,7 +95,7 @@ $SC_$CPU_HS_AMT[31].AppName = "TST_ES3"
 $SC_$CPU_HS_AMT[32].AppName = "TST_ES4"
 
 ;; Set the common fields in each entry
-for index = 1 to HS_MAX_CRITICAL_APPS do
+for index = 1 to HS_MAX_MONITORED_APPS do
   $SC_$CPU_HS_AMT[index].NullTerm = 0
   $SC_$CPU_HS_AMT[index].CycleCnt = 10
   $SC_$CPU_HS_AMT[index].ActionType = HS_AMT_ACT_EVENT
@@ -104,7 +104,7 @@ enddo
 ;; Set the TST_ES2 Action to be Application Restart
 $SC_$CPU_HS_AMT[30].ActionType = HS_AMT_ACT_APP_RESTART
 
-local endmnemonic = "$SC_$CPU_HS_AMT[" & HS_MAX_CRITICAL_APPS & "].ActionType"
+local endmnemonic = "$SC_$CPU_HS_AMT[" & HS_MAX_MONITORED_APPS & "].ActionType"
 
 ;; Create the Table Load file
 s create_tbl_file_from_cvt ("$CPU",apid,"App Monitoring Table Load 12","hs_def_amt12",amtTblName,"$SC_$CPU_HS_AMT[1].AppName",endmnemonic)

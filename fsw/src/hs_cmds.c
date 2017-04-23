@@ -1,8 +1,8 @@
 /************************************************************************
 ** File:
-**   $Id: hs_cmds.c 1.12 2015/03/03 12:16:24EST sstrege Exp  $
+**   $Id: hs_cmds.c 1.4 2016/09/07 18:49:19EDT mdeschu Exp  $
 **
-**   Copyright © 2007-2014 United States Government as represented by the 
+**   Copyright © 2007-2016 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
 **   All Other Rights Reserved.  
 **
@@ -15,6 +15,18 @@
 **   CFS Health and Safety (HS) command handling routines
 **
 **   $Log: hs_cmds.c  $
+**   Revision 1.4 2016/09/07 18:49:19EDT mdeschu 
+**   All CFE_EVS_SendEvents with format warning arguments were explicitly cast
+**   Revision 1.3 2016/05/16 17:33:11EDT czogby 
+**   Move function prototype from hs_cmds.c file to hs_cmds.h file
+**   Revision 1.2 2015/11/12 14:25:21EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.15 2015/05/04 11:59:12EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.14 2015/05/04 10:59:56EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.13 2015/05/01 16:48:37EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.12 2015/03/03 12:16:24EST sstrege 
 **   Added copyright information
 **   Revision 1.11 2011/10/13 18:47:16EDT aschoeni 
@@ -53,262 +65,6 @@
 #include "hs_msgids.h"
 #include "hs_events.h"
 #include "hs_version.h"
-
-/************************************************************************
-** Local function prototypes
-*************************************************************************/
-
-/************************************************************************/
-/** \brief Housekeeping request
-**
-**  \par Description
-**       Processes an on-board housekeeping request message.
-**
-**  \par Assumptions, External Events, and Notes:
-**       This message does not affect the command execution counter
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-*************************************************************************/
-void HS_HousekeepingReq(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Noop command
-**
-**  \par Description
-**       Processes a noop ground command.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_NOOP_CC
-**
-*************************************************************************/
-void HS_NoopCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Reset counters command
-**
-**  \par Description
-**       Processes a reset counters ground command which will reset
-**       the following HS application counters to zero:
-**         - Command counter
-**         - Command error counter
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_RESET_CC
-**
-*************************************************************************/
-void HS_ResetCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process an enable critical applications monitor command
-**
-**  \par Description
-**       Allows the critical applications to be monitored.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_ENABLE_APPMON_CC
-**
-*************************************************************************/
-void HS_EnableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a disable critical applications monitor command
-**
-**  \par Description
-**       Stops the critical applications from be monitored.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_DISABLE_APPMON_CC
-**
-*************************************************************************/
-void HS_DisableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process an enable critical events monitor command
-**
-**  \par Description
-**       Allows the critical events to be monitored.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_ENABLE_EVENTMON_CC
-**
-*************************************************************************/
-void HS_EnableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a disable critical events monitor command
-**
-**  \par Description
-**       Stops the critical events from be monitored.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_DISABLE_EVENTMON_CC
-**
-*************************************************************************/
-void HS_DisableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process an enable aliveness indicator command
-**
-**  \par Description
-**       Allows the aliveness indicator to be output to the UART.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_ENABLE_ALIVENESS_CC
-**
-*************************************************************************/
-void HS_EnableAlivenessCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a disable aliveness indicator command
-**
-**  \par Description
-**       Stops the aliveness indicator from being output on the UART.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_DISABLE_ALIVENESS_CC
-**
-*************************************************************************/
-void HS_DisableAlivenessCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process an enable CPU Hogging indicator command
-**
-**  \par Description
-**       Allows the CPU Hogging indicator to be output as an event.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_ENABLE_CPUHOG_CC
-**
-*************************************************************************/
-void HS_EnableCPUHogCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a disable CPU Hogging indicator command
-**
-**  \par Description
-**       Stops the CPU Hogging indicator from being output as an event.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_DISABLE_CPUHOG_CC
-**
-*************************************************************************/
-void HS_DisableCPUHogCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a reset resets performed command
-**
-**  \par Description
-**       Resets the count of HS performed resets maintained by HS.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_SET_MAX_RESETS_CC
-**
-*************************************************************************/
-void HS_ResetResetsPerformedCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Process a set max resets command
-**
-**  \par Description
-**       Sets the max number of HS performed resets to the specified value.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \param [in]   MessagePtr   A #CFE_SB_MsgPtr_t pointer that
-**                             references the software bus message
-**
-**  \sa #HS_RESET_RESETS_PERFORMED_CC
-**
-*************************************************************************/
-void HS_SetMaxResetsCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Refresh Critical Applications Monitor Status
-**
-**  \par Description
-**       This function gets called when HS detects that a new critical
-**       applications monitor table has been loaded or when a command
-**       to enable the critical applications monitor is received: it then
-**       refreshes the timeouts for application being monitored
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_AppMonStatusRefresh(void);
-
-/************************************************************************/
-/** \brief Refresh Message Actions Status
-**
-**  \par Description
-**       This function gets called when HS detects that a new
-**       message actions table has been loaded: it then
-**       resets the cooldowns for all actions.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_MsgActsStatusRefresh(void);
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -457,7 +213,7 @@ void HS_HousekeepingReq(CFE_SB_MsgPtr_t MessagePtr)
         */
         HS_AppData.HkPacket.InvalidEventMonCount    = 0;
 
-        for(TableIndex = 0; TableIndex < HS_MAX_CRITICAL_EVENTS; TableIndex++)
+        for(TableIndex = 0; TableIndex < HS_MAX_MONITORED_EVENTS; TableIndex++)
         {
             if(HS_AppData.EMTablePtr[TableIndex].ActionType != HS_EMT_ACT_NOACT)
             {
@@ -501,7 +257,7 @@ void HS_HousekeepingReq(CFE_SB_MsgPtr_t MessagePtr)
         /*
         ** Update the AppMon Enables
         */
-        for(TableIndex = 0; TableIndex <= ((HS_MAX_CRITICAL_APPS -1) / HS_BITS_PER_APPMON_ENABLE); TableIndex++)
+        for(TableIndex = 0; TableIndex <= ((HS_MAX_MONITORED_APPS -1) / HS_BITS_PER_APPMON_ENABLE); TableIndex++)
         {
             HS_AppData.HkPacket.AppMonEnables[TableIndex] = HS_AppData.AppMonEnables[TableIndex];
         }
@@ -638,7 +394,7 @@ void HS_ResetCounters(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Enable critical applications monitor command                    */
+/* Enable applications monitor command                             */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void HS_EnableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
@@ -655,7 +411,7 @@ void HS_EnableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
         HS_AppData.CurrentAppMonState = HS_STATE_ENABLED;
         CFE_EVS_SendEvent (HS_ENABLE_APPMON_DBG_EID,
                            CFE_EVS_DEBUG,
-                           "Critical Application Monitoring Enabled");
+                           "Application Monitoring Enabled");
     }
 
     return;
@@ -664,7 +420,7 @@ void HS_EnableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Disable critical applications monitor command                   */
+/* Disable applications monitor command                            */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void HS_DisableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
@@ -680,7 +436,7 @@ void HS_DisableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
         HS_AppData.CurrentAppMonState = HS_STATE_DISABLED;
         CFE_EVS_SendEvent (HS_DISABLE_APPMON_DBG_EID,
                            CFE_EVS_DEBUG,
-                           "Critical Application Monitoring Disabled");
+                           "Application Monitoring Disabled");
     }
 
     return;
@@ -689,7 +445,7 @@ void HS_DisableAppMonCmd(CFE_SB_MsgPtr_t MessagePtr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Enable critical events monitor command                          */
+/* Enable events monitor command                                   */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void HS_EnableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
@@ -716,7 +472,7 @@ void HS_EnableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
           if (Status != CFE_SUCCESS)
           {
              CFE_EVS_SendEvent(HS_EVENTMON_SUB_EID, CFE_EVS_ERROR,
-                 "Event Monitor Enable: Error Subscribing to Events,RC=0x%08X",Status);
+                 "Event Monitor Enable: Error Subscribing to Events,RC=0x%08X",(unsigned int)Status);
              HS_AppData.CmdErrCount++;
           }
        }
@@ -727,7 +483,7 @@ void HS_EnableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
             HS_AppData.CurrentEventMonState = HS_STATE_ENABLED;
             CFE_EVS_SendEvent (HS_ENABLE_EVENTMON_DBG_EID,
                                CFE_EVS_DEBUG,
-                               "Critical Event Monitoring Enabled");
+                               "Event Monitoring Enabled");
        }
     }
 
@@ -737,7 +493,7 @@ void HS_EnableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
-/* Disable critical events monitor command                         */
+/* Disable event monitor command                                   */
 /*                                                                 */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void HS_DisableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
@@ -763,7 +519,7 @@ void HS_DisableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
           if (Status != CFE_SUCCESS)
           {
              CFE_EVS_SendEvent(HS_EVENTMON_UNSUB_EID, CFE_EVS_ERROR,
-                 "Event Monitor Disable: Error Unsubscribing from Events,RC=0x%08X",Status);
+                 "Event Monitor Disable: Error Unsubscribing from Events,RC=0x%08X",(unsigned int)Status);
              HS_AppData.CmdErrCount++;
           }
        }
@@ -774,7 +530,7 @@ void HS_DisableEventMonCmd(CFE_SB_MsgPtr_t MessagePtr)
            HS_AppData.CurrentEventMonState = HS_STATE_DISABLED;
            CFE_EVS_SendEvent (HS_DISABLE_EVENTMON_DBG_EID,
                               CFE_EVS_DEBUG,
-                              "Critical Event Monitoring Disabled");
+                              "Event Monitoring Disabled");
        }
     }
 
@@ -1030,7 +786,7 @@ void HS_AcquirePointers(void)
         {
             CFE_EVS_SendEvent(HS_APPMON_GETADDR_ERR_EID, CFE_EVS_ERROR,
                               "Error getting AppMon Table address, RC=0x%08X, Application Monitoring Disabled",
-                              Status);
+                              (unsigned int)Status);
             HS_AppData.CurrentAppMonState = HS_STATE_DISABLED;
             HS_AppData.AppMonLoaded = HS_STATE_DISABLED;
         }
@@ -1071,7 +827,7 @@ void HS_AcquirePointers(void)
         {
             CFE_EVS_SendEvent(HS_EVENTMON_GETADDR_ERR_EID, CFE_EVS_ERROR,
                               "Error getting EventMon Table address, RC=0x%08X, Event Monitoring Disabled",
-                              Status);
+                              (unsigned int)Status);
 
             if (HS_AppData.CurrentEventMonState == HS_STATE_ENABLED)
             {
@@ -1081,7 +837,7 @@ void HS_AcquirePointers(void)
                 if (Status != CFE_SUCCESS)
                 {
                     CFE_EVS_SendEvent(HS_BADEMT_UNSUB_EID, CFE_EVS_ERROR,
-                        "Error Unsubscribing from Events,RC=0x%08X",Status);
+                        "Error Unsubscribing from Events,RC=0x%08X",(unsigned int)Status);
                 }
             }
 
@@ -1133,7 +889,7 @@ void HS_AcquirePointers(void)
         {
             CFE_EVS_SendEvent(HS_MSGACTS_GETADDR_ERR_EID, CFE_EVS_ERROR,
                               "Error getting MsgActs Table address, RC=0x%08X",
-                              Status);
+                              (unsigned int)Status);
             HS_AppData.MsgActsState = HS_STATE_DISABLED;
         }
     }
@@ -1173,7 +929,7 @@ void HS_AcquirePointers(void)
         {
             CFE_EVS_SendEvent(HS_EXECOUNT_GETADDR_ERR_EID, CFE_EVS_ERROR,
                               "Error getting ExeCount Table address, RC=0x%08X",
-                              Status);
+                              (unsigned int)Status);
            HS_AppData.ExeCountState = HS_STATE_DISABLED;
         }
     }
@@ -1204,7 +960,7 @@ void HS_AppMonStatusRefresh(void)
     /*
     ** Clear all AppMon Enable bits
     */
-    for (EnableIndex = 0; EnableIndex <= ((HS_MAX_CRITICAL_APPS -1) / HS_BITS_PER_APPMON_ENABLE); EnableIndex++ )
+    for (EnableIndex = 0; EnableIndex <= ((HS_MAX_MONITORED_APPS -1) / HS_BITS_PER_APPMON_ENABLE); EnableIndex++ )
     {
         HS_AppData.AppMonEnables[EnableIndex] = 0;
 
@@ -1213,7 +969,7 @@ void HS_AppMonStatusRefresh(void)
     /*
     ** Set AppMon enable bits and reset Countups and Exec Counter comparisons
     */
-    for (TableIndex = 0; TableIndex < HS_MAX_CRITICAL_APPS; TableIndex++ )
+    for (TableIndex = 0; TableIndex < HS_MAX_MONITORED_APPS; TableIndex++ )
     {
         HS_AppData.AppMonLastExeCount[TableIndex] = 0;
 

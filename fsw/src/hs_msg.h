@@ -1,6 +1,6 @@
 /************************************************************************
 ** File:
-**   $Id: hs_msg.h 1.9 2015/03/03 12:16:27EST sstrege Exp  $
+**   $Id: hs_msg.h 1.2 2015/11/12 14:25:26EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -23,6 +23,14 @@
 **   info).
 **
 **   $Log: hs_msg.h  $
+**   Revision 1.2 2015/11/12 14:25:26EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.12 2015/05/04 11:59:08EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.11 2015/05/04 10:59:54EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.10 2015/05/01 16:48:37EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.9 2015/03/03 12:16:27EST sstrege 
 **   Added copyright information
 **   Revision 1.8 2011/08/16 14:59:24EDT aschoeni 
@@ -102,10 +110,9 @@ typedef struct
     uint8     CmdErrCount;                    /**< \hstlmmnemonic \HS_CMDEC
                                                         \brief HS Application Command Error Counter */
     uint8     CurrentAppMonState;             /**< \hstlmmnemonic \HS_APPMONSTATE
-                                                        \brief Status of HS Critical Application
-                                                               Monitor                              */
+                                                        \brief Status of HS Application Monitor     */
     uint8     CurrentEventMonState;           /**< \hstlmmnemonic \HS_EVTMONSTATE
-                                                        \brief Status of HS Critical Events Monitor */
+                                                        \brief Status of HS Event Monitor */
     uint8     CurrentAlivenessState;          /**< \hstlmmnemonic \HS_CPUALIVESTATE
                                                         \brief Status of HS Aliveness Indicator     */
     uint8     CurrentCPUHogState;             /**< \hstlmmnemonic \HS_CPUHOGSTATE
@@ -120,11 +127,11 @@ typedef struct
                                                         \brief HS Maximum Processor Reset Count   */
     uint32    EventsMonitoredCount;           /**< \hstlmmnemonic \HS_EVTMONCNT
                                                         \brief Total count of Event Messages
-                                                         Monitored by the Critical Events Monitor   */
+                                                         Monitored by the Events Monitor   */
     uint32    InvalidEventMonCount;           /**< \hstlmmnemonic \HS_INVALIDEVTAPPCNT
                                                         \brief Total count of Invalid Event Monitors
-                                                         Monitored by the Critical Events Monitor   */
-    uint32    AppMonEnables[((HS_MAX_CRITICAL_APPS - 1) / HS_BITS_PER_APPMON_ENABLE)+1];/**< \hstlmmnemonic \HS_APPSTATUS
+                                                         Monitored by the Events Monitor   */
+    uint32    AppMonEnables[((HS_MAX_MONITORED_APPS - 1) / HS_BITS_PER_APPMON_ENABLE)+1];/**< \hstlmmnemonic \HS_APPSTATUS
                                                         \brief Enable states of App Monitor Entries */
     uint32    MsgActExec;                     /**< \hstlmmnemonic \HS_MSGACTEXEC
                                                         \brief Number of Software Bus Message Actions Executed */

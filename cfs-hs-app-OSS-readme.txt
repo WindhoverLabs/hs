@@ -1,10 +1,10 @@
 core Flight System (cFS) Health and Safety Application (HS) 
 Open Source Release Readme
 
-HS Release 2.2.0 
+HS Release 2.3.0 
 
 Date: 
-February 27, 2015
+October 12, 2016
 
 Introduction:
   The Health and Safety application (HS) is a core Flight System (cFS) 
@@ -29,7 +29,7 @@ Introduction:
   available in cfs-hs-2.2.0-OSS-release/docs/users_guide
   
   There are also "Quick start" instructions provided in 
-  cFE-6.4.1-OSS-release/cfe-OSS-readme.txt   
+  cFE-6.5.0-OSS-release/cfe-OSS-readme.txt   
   
   The OSAL is available at http://sourceforge.net/projects/osal/ and 
   github.com/nasa/
@@ -41,16 +41,16 @@ Introduction:
  
  
 Software Included:
-  Health and Safety application (HS) 2.2.0
+  Health and Safety application (HS) 2.3.0
   
  
 Software Required:
 
- Operating System Abstraction Layer 4.1.1 or higher can be 
+ Operating System Abstraction Layer 4.2.0 or higher can be 
  obtained at http://sourceforge.net/projects/osal or 
  github.com/nasa/osal
  
- core Flight Executive 6.4.1 or higher can be obtained at
+ core Flight Executive 6.5.0 or higher can be obtained at
  http://sorceforge.net/projects/coreflightexec
 
   

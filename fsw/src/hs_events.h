@@ -1,6 +1,6 @@
 /************************************************************************
 ** File:
-**   $Id: hs_events.h 1.10 2015/03/03 12:16:21EST sstrege Exp  $
+**   $Id: hs_events.h 1.2 2015/11/12 14:25:16EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,14 @@
 ** Notes:
 **
 **   $Log: hs_events.h  $
+**   Revision 1.2 2015/11/12 14:25:16EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.13 2015/05/04 11:59:12EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.12 2015/05/01 16:55:33EDT lwalling 
+**   Remove critical from application monitor descriptions
+**   Revision 1.11 2015/05/01 13:52:07EDT lwalling 
+**   Change event HS_MAT_LD_ERR_EID description typo from AppMon to MsgActs
 **   Revision 1.10 2015/03/03 12:16:21EST sstrege 
 **   Added copyright information
 **   Revision 1.9 2011/10/13 18:47:32EDT aschoeni 
@@ -268,8 +276,8 @@
 */
 #define HS_XCT_LD_ERR_EID 16
 
-/** \brief <tt> 'Error Loading AppMon Table,RC=0x\%08X' </tt>
-**  \event <tt> 'Error Loading AppMon Table,RC=0x\%08X' </tt>
+/** \brief <tt> 'Error Loading MsgActs Table,RC=0x\%08X' </tt>
+**  \event <tt> 'Error Loading MsgActs Table,RC=0x\%08X' </tt>
 **
 **  \par Type: ERROR
 **
@@ -383,8 +391,8 @@
 */
 #define HS_RESET_DBG_EID 24
 
-/** \brief <tt> 'Critical Application Monitoring Enabled' </tt>
-**  \event <tt> 'Critical Application Monitoring Enabled' </tt>
+/** \brief <tt> 'Application Monitoring Enabled' </tt>
+**  \event <tt> 'Application Monitoring Enabled' </tt>
 **
 **  \par Type: DEBUG
 **
@@ -395,8 +403,8 @@
 */
 #define HS_ENABLE_APPMON_DBG_EID 25
 
-/** \brief <tt> 'Critical Application Monitoring Disabled' </tt>
-**  \event <tt> 'Critical Application Monitoring Disabled' </tt>
+/** \brief <tt> 'Application Monitoring Disabled' </tt>
+**  \event <tt> 'Application Monitoring Disabled' </tt>
 **
 **  \par Type: DEBUG
 **
@@ -407,8 +415,8 @@
 */
 #define HS_DISABLE_APPMON_DBG_EID 26
 
-/** \brief <tt> 'Critical Event Monitoring Enabled' </tt>
-**  \event <tt> 'Critical Event Monitoring Enabled' </tt>
+/** \brief <tt> 'Event Monitoring Enabled' </tt>
+**  \event <tt> 'Event Monitoring Enabled' </tt>
 **
 **  \par Type: DEBUG
 **
@@ -419,8 +427,8 @@
 */
 #define HS_ENABLE_EVENTMON_DBG_EID 27
 
-/** \brief <tt> 'Critical Event Monitoring Disabled' </tt>
-**  \event <tt> 'Critical Event Monitoring Disabled' </tt>
+/** \brief <tt> 'Event Monitoring Disabled' </tt>
+**  \event <tt> 'Event Monitoring Disabled' </tt>
 **
 **  \par Type: DEBUG
 **
@@ -562,21 +570,21 @@
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical application name cannot be resolved
+**  This event message is issued when an application name cannot be resolved
 **  into an application ID by the OS.
 **
 **  The \c APP field specifies the name in the table that was not found in the system.
 */
 #define HS_APPMON_APPNAME_ERR_EID 38
 
-/** \brief <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Restart Application' </tt>
-**  \event <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Restart Application' </tt>
+/** \brief <tt> 'App Monitor Failure: APP:(\%s): Action: Restart Application' </tt>
+**  \event <tt> 'App Monitor Failure: APP:(\%s): Action: Restart Application' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical application fails to increment its
+**  This event message is issued when a monitored application fails to increment its
 **  execution counter in the table specified number of cycles, and the specified
 **  action type is Application Restart.
 **
@@ -600,14 +608,14 @@
 */
 #define HS_APPMON_NOT_RESTARTED_ERR_EID 40
 
-/** \brief <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Event Only' </tt>
-**  \event <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Event Only' </tt>
+/** \brief <tt> 'App Monitor Failure: APP:(\%s): Action: Event Only' </tt>
+**  \event <tt> 'App Monitor Failure: APP:(\%s): Action: Event Only' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical application fails to increment its
+**  This event message is issued when a monitored application fails to increment its
 **  execution counter in the table specified number of cycles, and the specified
 **  action type is Event Only.
 **
@@ -615,14 +623,14 @@
 */
 #define HS_APPMON_FAIL_ERR_EID 41
 
-/** \brief <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Processor Reset' </tt>
-**  \event <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Processor Reset' </tt>
+/** \brief <tt> 'App Monitor Failure: APP:(\%s): Action: Processor Reset' </tt>
+**  \event <tt> 'App Monitor Failure: APP:(\%s): Action: Processor Reset' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical application fails to increment its
+**  This event message is issued when a monitored application fails to increment its
 **  execution counter in the table specified number of cycles, and the specified
 **  action type is Processor Reset.
 **
@@ -630,14 +638,14 @@
 */
 #define HS_APPMON_PROC_ERR_EID 42
 
-/** \brief <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Message Action Index: \%d' </tt>
-**  \event <tt> 'Critical App Monitor Failure: APP:(\%s): Action: Message Action Index: \%d' </tt>
+/** \brief <tt> 'App Monitor Failure: APP:(\%s): Action: Message Action Index: \%d' </tt>
+**  \event <tt> 'App Monitor Failure: APP:(\%s): Action: Message Action Index: \%d' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical application fails to increment its
+**  This event message is issued when a monitored application fails to increment its
 **  execution counter in the table specified number of cycles, and the specified
 **  action type is a Message Action.
 **
@@ -646,14 +654,14 @@
 */
 #define HS_APPMON_MSGACTS_ERR_EID 43
 
-/** \brief <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Message Action Index: \%d' </tt>
-**  \event <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Message Action Index: \%d' </tt>
+/** \brief <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Message Action Index: \%d' </tt>
+**  \event <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Message Action Index: \%d' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
-**  This event message is issued when a critical event is detected, and the specified
+**  This event message is issued when a monitored event is detected, and the specified
 **  action type is a Message Action.
 **
 **  The \c APP field specifies the name of the application that sent the message.
@@ -662,15 +670,15 @@
 */
 #define HS_EVENTMON_MSGACTS_ERR_EID 44
 
-/** \brief <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Processor Reset' </tt>
-**  \event <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Processor Reset' </tt>
+/** \brief <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Processor Reset' </tt>
+**  \event <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Processor Reset' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
 **  This event message is issued when an event is received that matches an event in the
-**  critical event monitor table that specifies Processor Reset as the action type
+**  event monitor table that specifies Processor Reset as the action type
 **
 **  The \c APP field specifies the name of the application that issued the event and is
 **  being restarted.
@@ -678,15 +686,15 @@
 */
 #define HS_EVENTMON_PROC_ERR_EID 45
 
-/** \brief <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Restart Application' </tt>
-**  \event <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Restart Application' </tt>
+/** \brief <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Restart Application' </tt>
+**  \event <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Restart Application' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
 **  This event message is issued when an event is received that matches an event in the
-**  critical event monitor table that specifies Restart Application as the action type
+**  event monitor table that specifies Restart Application as the action type
 **
 **  The \c APP field specifies the name of the application that issued the event and is
 **  being restarted.
@@ -710,15 +718,15 @@
 */
 #define HS_EVENTMON_NOT_RESTARTED_ERR_EID 47
 
-/** \brief <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Delete Application' </tt>
-**  \event <tt> 'Critical Event: APP:(\%s) EID:(\%d): Action: Delete Application' </tt>
+/** \brief <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Delete Application' </tt>
+**  \event <tt> 'Event Monitor: APP:(\%s) EID:(\%d): Action: Delete Application' </tt>
 **
 **  \par Type: ERROR
 **
 **  \par Cause:
 **
 **  This event message is issued when an event is received that matches an event in the
-**  critical event monitor table that specifies Delete Application as the action type
+**  event monitor table that specifies Delete Application as the action type
 **
 **  The \c APP field specifies the name of the application that issued the event, and is
 **  being deleted.
@@ -879,8 +887,8 @@
 */
 #define HS_MATVAL_ERR_EID 57
 
-/** \brief <tt> 'Critical Application Monitoring Disabled due to Table Load Failure' </tt>
-**  \event <tt> 'Critical Application Monitoring Disabled due to Table Load Failure' </tt>
+/** \brief <tt> 'Application Monitoring Disabled due to Table Load Failure' </tt>
+**  \event <tt> 'Application Monitoring Disabled due to Table Load Failure' </tt>
 **
 **  \par Type: ERROR
 **
@@ -891,8 +899,8 @@
 */
 #define HS_DISABLE_APPMON_ERR_EID 58
 
-/** \brief <tt> 'Critical Event Monitoring Disabled due to Table Load Failure' </tt>
-**  \event <tt> 'Critical Event Monitoring Disabled due to Table Load Failure' </tt>
+/** \brief <tt> 'Event Monitoring Disabled due to Table Load Failure' </tt>
+**  \event <tt> 'Event Monitoring Disabled due to Table Load Failure' </tt>
 **
 **  \par Type: ERROR
 **

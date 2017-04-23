@@ -114,6 +114,10 @@ PROC $sc_$cpu_hs_eventmon
 ;	Date		   Name		Description
 ;	06/23/09	Walt Moleski	Original Procedure.
 ;       01/12/11        Walt Moleski    Updated for HS 2.1.0.0
+;       09/19/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -191,6 +195,8 @@ LOCAL rawcmd, stream, index
 local HSAppName = HS_APP_NAME
 local ramDir = "RAM:0"  
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
+
 ;; Table Names
 local AppMonTblName = HSAppName & "." & HS_AMT_TABLENAME
 local EvtMonTblName = HSAppName & "." & HS_EMT_TABLENAME
@@ -208,7 +214,8 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -237,7 +244,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -256,7 +263,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -275,7 +282,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -294,7 +301,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
@@ -560,7 +567,7 @@ s $sc_$cpu_hs_emt2
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt2","$CPU")
+s load_table("hs_def_emt2",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -625,8 +632,8 @@ endif
 write ";*********************************************************************"
 write ";  Step 3.4: Send the TST_HS Noop Command to trigger the app restart "
 write ";*********************************************************************"
-ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_NOOP_INF_EID, "INFO", 1
-ut_setupevents "$SC", "$CPU", {HSAppName}, HS_EVENTMON_RESTART_ERR_EID, "ERROR", 2
+ut_setupevents "$SC","$CPU","TST_HS", TST_HS_NOOP_INF_EID, "INFO", 1
+ut_setupevents "$SC","$CPU",{HSAppName}, HS_EVENTMON_RESTART_ERR_EID,"ERROR", 2
 ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_INIT_INF_EID, "INFO", 3
 
 ;; Send the command
@@ -670,7 +677,7 @@ s $sc_$cpu_hs_emt3
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt3","$CPU")
+s load_table("hs_def_emt3",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -768,7 +775,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -816,7 +824,7 @@ s $sc_$cpu_hs_emt4
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt4","$CPU")
+s load_table("hs_def_emt4",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -923,7 +931,7 @@ write ";***********************************************************************"
 ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
 ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_INIT_INF_EID, "INFO", 2
 
-s load_start_app ("TST_HS","$CPU","TST_HS_AppMain")
+s load_start_app ("TST_HS",hostCPU,"TST_HS_AppMain")
 
 ; Wait for app startup events 
 ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1
@@ -960,7 +968,7 @@ s $sc_$cpu_hs_emt5
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt5","$CPU")
+s load_table("hs_def_emt5",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1124,7 +1132,7 @@ write ";*********************************************************************"
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt3","$CPU")
+s load_table("hs_def_emt3",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1286,7 +1294,7 @@ s $sc_$cpu_hs_emt6
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt6","$CPU")
+s load_table("hs_def_emt6",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1360,19 +1368,19 @@ wait 5
 write ";*********************************************************************"
 write ";  Step 4.4: Dump the Critical Event Table "
 write ";*********************************************************************"
-s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", "$CPU", emtAPID)
+s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", hostCPU, emtAPID)
 wait 5
 
 local index
 ;; Check that all the application slots are filled
-for index = 1 to HS_MAX_CRITICAL_EVENTS do
+for index = 1 to HS_MAX_MONITORED_EVENTS do
   if ($SC_$CPU_HS_EMT[index].AppName = "") then
     break
   endif
 enddo
 
-;; If all the table entries were filled, i will = HS_MAX_CRITICAL_EVENTS + 1
-if (index = HS_MAX_CRITICAL_EVENTS+1) then
+;; If all the table entries were filled, i will = HS_MAX_MONITORED_EVENTS + 1
+if (index = HS_MAX_MONITORED_EVENTS+1) then
   write "<*> Passed (5003) - HS supported the maximum defined Critical Events"
   ut_setrequirements HS_5003, "P"
 else
@@ -1390,7 +1398,7 @@ s $sc_$cpu_hs_emt7
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt7","$CPU")
+s load_table("hs_def_emt7",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1492,7 +1500,7 @@ s $sc_$cpu_hs_emt9
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt9","$CPU")
+s load_table("hs_def_emt9",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1619,7 +1627,7 @@ s $sc_$cpu_hs_emt8
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_emt8","$CPU")
+s load_table("hs_def_emt8",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -1669,13 +1677,13 @@ write ";*********************************************************************"
 write ";  Step 5.3: Remove the default tables from the onboard processor."
 write ";*********************************************************************"
 ;; Remove the default table files
-s ftp_file (defTblDir,"na",amtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",amtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",emtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",emtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",matFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",matFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",xctFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",xctFileName,hostCPU,"R")
 wait 5
 
 write ";*********************************************************************"
@@ -1688,7 +1696,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -1744,7 +1753,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

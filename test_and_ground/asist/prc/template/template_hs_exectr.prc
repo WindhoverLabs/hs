@@ -77,6 +77,10 @@ PROC $sc_$cpu_hs_exectr
 ;	Date		   Name		Description
 ;	06/24/09	Walt Moleski	Original Procedure.
 ;	01/12/11	Walt Moleski	Updated for HS 2.1.0.0
+;       09/19/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -139,6 +143,8 @@ LOCAL rawcmd, stream, index
 local HSAppName = HS_APP_NAME
 local ramDir = "RAM:0"
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
+
 ;; Table Names
 local AppMonTblName = HSAppName & "." & HS_AMT_TABLENAME
 local EvtMonTblName = HSAppName & "." & HS_EMT_TABLENAME
@@ -156,7 +162,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -185,7 +192,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -204,7 +211,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -223,7 +230,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -242,7 +249,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
@@ -331,7 +338,7 @@ wait 5
 write ";***********************************************************************"
 write ";  Step 1.7: Dump the Execution Counter Table"
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir,ExeCntTblName,"A","$cpu_hs_dumpxct",hostCPU,xctAPID)
 wait 5
 
 local index
@@ -361,7 +368,7 @@ s $sc_$cpu_hs_xct2
 local cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Critical Event Table
-s load_table("hs_def_xct2","$CPU")
+s load_table("hs_def_xct2",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -442,13 +449,13 @@ write ";*********************************************************************"
 write ";  Step 2.5: Remove the default tables from the onboard processor."
 write ";*********************************************************************"
 ;; Remove the default table files
-s ftp_file (defTblDir,"na",amtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",amtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",emtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",emtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",matFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",matFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",xctFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",xctFileName,hostCPU,"R")
 wait 5
 
 write ";*********************************************************************"
@@ -461,7 +468,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -549,7 +557,7 @@ s $sc_$cpu_hs_xct4
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Execution Counter Table
-s load_table("hs_def_xct4","$CPU")
+s load_table("hs_def_xct4",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -609,7 +617,7 @@ s $sc_$cpu_hs_xct3
 cmdCtr = $SC_$CPU_TBL_CMDPC + 1
 
 ;; Send the command to load the Execution Counter Table
-s load_table("hs_def_xct3","$CPU")
+s load_table("hs_def_xct3",hostCPU)
 wait 5
 
 ut_tlmwait $SC_$CPU_TBL_CMDPC, {cmdCtr}
@@ -674,7 +682,7 @@ endif
 write ";***********************************************************************"
 write ";  Step 3.4: Dump the Execution Counter Table"
 write ";***********************************************************************"
-s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir,ExeCntTblName,"A","$cpu_hs_dumpxct",hostCPU,xctAPID)
 wait 5
 
 local index
@@ -704,7 +712,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

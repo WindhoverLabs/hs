@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_custom.c 1.3 2015/03/03 12:16:07EST sstrege Exp  $
+**   $Id: hs_custom.c 1.6 2016/09/07 18:49:18EDT mdeschu Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,23 @@
 **   to work in a more efficient way, or to provide greater functionality.
 **
 **   $Log: hs_custom.c  $
+**   Revision 1.6 2016/09/07 18:49:18EDT mdeschu 
+**   All CFE_EVS_SendEvents with format warning arguments were explicitly cast
+**   Revision 1.5 2016/08/05 09:43:30EDT mdeschu 
+**   Ticket #26: Fix HS build errors with strict settings
+**   
+**       Fix minor issues causing build to fail:
+**   
+**           Extra argument in CFE_SendEvent() call
+**           Unused variable in HS_CustomCleanup()
+**   Revision 1.4 2016/07/22 21:13:44EDT czogby 
+**   Function HS_CustomGetUtil Does Not Protect Against Divide-By-Zero
+**   Revision 1.3 2016/05/16 17:40:01EDT czogby 
+**   Move function prototypes and constants from hs_custom.c file to hs_custom.h file
+**   Revision 1.2 2015/11/12 14:25:19EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.4 2015/04/27 15:39:49EDT lwalling 
+**   Fix typos -- UtilMult2=HS_UTIL_CONV_DIV and UtilDiv=HS_UTIL_CONV_MULT2
 **   Revision 1.3 2015/03/03 12:16:07EST sstrege 
 **   Added copyright information
 **   Revision 1.2 2011/10/17 16:45:21EDT aschoeni 
@@ -56,334 +73,6 @@
 #include "hs_events.h"
 #include "hs_monitors.h"
 #include "hs_perfids.h"
-
-#define HS_UTIL_DIAG_REPORTS 4
-
-/*
-** Command Codes
-** Custom codes must not conflict with those in hs_msgdefs.h
-*/
-
-/** \hscmd Report Util Diagnostics
-**
-**  \par Description
-**       Reports the Utilization Diagnostics
-**
-**  \hscmdmnemonic \HS_REPORTDIAG
-**
-**  \par Command Structure
-**       #HS_NoArgsCmd_t
-**
-**  \par Command Verification
-**       Successful execution of this command may be verified with
-**       the following telemetry:
-**       - \b \c \HS_CMDPC          - command counter will increment
-**       - The #HS_UTIL_DIAG_REPORT_EID informational event message will be
-**         generated when the command is executed
-**
-**  \par Error Conditions
-**       This command may fail for the following reason(s):
-**       - Command packet length not as expected
-**
-**  \par Evidence of failure may be found in the following telemetry:
-**       - \b \c \HS_CMDEC - command error counter will increment
-**
-**  \par Criticality
-**       None
-*/
-#define HS_REPORT_DIAG_CC          12
-
-/** \hscmd Set Utilization Calibration Parameters
-**
-**  \par Description
-**       Sets the Utilization Calibration Parameter
-**
-**  \hscmdmnemonic \HS_SETUTILPARAMS
-**
-**  \par Command Structure
-**       #HS_SetUtilParamsCmd_t
-**
-**  \par Command Verification
-**       Successful execution of this command may be verified with
-**       the following telemetry:
-**       - \b \c \HS_CMDPC          - command counter will increment
-**
-**  \par Error Conditions
-**       This command may fail for the following reason(s):
-**       - Command packet length not as expected
-**       - Any parameter is set to 0.
-**
-**  \par Evidence of failure may be found in the following telemetry:
-**       - \b \c \HS_CMDEC - command error counter will increment
-**
-**  \par Criticality
-**       None
-*/
-#define HS_SET_UTIL_PARAMS_CC      13
-
-/** \hscmd Set Utilization Diagnostics Parameter
-**
-**  \par Description
-**       Sets the Utilization Diagnostics parameter
-**
-**  \hscmdmnemonic \HS_SETUTILDIAG
-**
-**  \par Command Structure
-**       #HS_SetUtilDiagCmd_t
-**
-**  \par Command Verification
-**       Successful execution of this command may be verified with
-**       the following telemetry:
-**       - \b \c \HS_CMDPC          - command counter will increment
-**
-**  \par Error Conditions
-**       This command may fail for the following reason(s):
-**       - Command packet length not as expected
-**
-**  \par Evidence of failure may be found in the following telemetry:
-**       - \b \c \HS_CMDEC - command error counter will increment
-**
-**  \par Criticality
-**       None
-*/
-#define HS_SET_UTIL_DIAG_CC        14
-
-
-/*
-** Event IDs
-** Custom Event IDs must not conflict with those in hs_events.h
-*/
-
-/** \brief <tt> 'Error Creating Child Task for CPU Utilization Monitoring,RC=0x\%08X' </tt>
-**  \event <tt> 'Error Creating Child Task for CPU Utilization Monitoring,RC=0x\%08X' </tt>
-**
-**  \par Type: ERROR
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety
-**  is unable to create its child task via the #CFE_ES_CreateChildTask
-**  API
-**
-**  The \c RC field contains the return status from the
-**  #CFE_ES_CreateChildTask call that generated the error
-*/
-#define HS_CR_CHILD_TASK_ERR_EID 101
-
-/** \brief <tt> 'Error Registering Sync Callback for CPU Utilization Monitoring,RC=0x\%08X' </tt>
-**  \event <tt> 'Error Registering Sync Callback for CPU Utilization Monitoring,RC=0x\%08X' </tt>
-**
-**  \par Type: ERROR
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety
-**  is unable to create its sync callback via the #CFE_TIME_RegisterSynchCallback
-**  API
-**
-**  The \c RC field contains the return status from the
-**  #CFE_TIME_RegisterSynchCallback call that generated the error.
-*/
-#define HS_CR_SYNC_CALLBACK_ERR_EID 102
-
-/** \brief <tt> 'Mask 0x\%08X Base Time Ticks per Idle Ticks (frequency): \%i(\%i), \%i(\%i), \%i(\%i), \%i(\%i)' </tt>
-**  \event <tt> 'Mask 0x\%08X Base Time Ticks per Idle Ticks (frequency): \%i(\%i), \%i(\%i), \%i(\%i), \%i(\%i)' </tt>
-**
-**  \par Type: INFORMATION
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety receives the #HS_REPORT_DIAG_CC command.
-**
-**  The \c Mask field contains the current utilization diagnostics mask. The subsequent fields contain from lowest to
-**  fourth lowest, the time time ticks per idle ticks, and the number of times it occurred (in parentheses).
-*/
-#define HS_UTIL_DIAG_REPORT_EID 103
-
-/** \brief <tt> 'Utilization Parms set: Mult1: \%d Div: \%d Mult2: \%d' </tt>
-**  \event <tt> 'Utilization Parms set: Mult1: \%d Div: \%d Mult2: \%d' </tt>
-**
-**  \par Type: Debug
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety successfully processes the #HS_SET_UTIL_PARAMS_CC command.
-**
-**  The Mult1, Div, and Mult2 fields contain the updated utilization parameters.
-*/
-#define HS_SET_UTIL_PARAMS_DBG_EID 104
-
-/** \brief <tt> 'Utilization Parms Error: No parameter may be 0: Mult1: \%d Div: \%d Mult2: \%d' </tt>
-**  \event <tt> 'Utilization Parms Error: No parameter may be 0: Mult1: \%d Div: \%d Mult2: \%d' </tt>
-**
-**  \par Type: Error
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety fails to processes the #HS_SET_UTIL_PARAMS_CC command.
-**  due to a 0 as at least one of the parameters.
-**
-**  The Mult1, Div, and Mult2 fields contain the utilization parameters from the command.
-*/
-#define HS_SET_UTIL_PARAMS_ERR_EID 105
-
-/** \brief <tt> 'Utilization Diagnostics Mask has been set to \%08X' </tt>
-**  \event <tt> 'Utilization Diagnostics Mask has been set to \%08X' </tt>
-**
-**  \par Type: Debug
-**
-**  \par Cause:
-**
-**  This event message is issued when CFS Health and Safety successfully processes the #HS_SET_UTIL_DIAG_CC command.
-**
-**  The Mask parameter contains the new mask value.
-*/
-#define HS_SET_UTIL_DIAG_DBG_EID 106
-
-
-/*
-** Command Structure Definitions
-*/
-typedef struct
-{
-    uint8          CmdHeader[CFE_SB_CMD_HDR_SIZE];
-    int32          Mult1;
-    int32          Div;
-    int32          Mult2;
-} HS_SetUtilParamsCmd_t;
-
-typedef struct
-{
-    uint8          CmdHeader[CFE_SB_CMD_HDR_SIZE];
-    uint32         Mask;
-} HS_SetUtilDiagCmd_t;
-
-
-/*
-** Custom Global Data Structure
-*/
-typedef struct
-{
-  int32    UtilMult1;/**< \brief CPU Utilization Conversion Factor Multiplication 1 */
-  int32    UtilDiv;/**< \brief CPU Utilization Conversion Factor Division */
-  int32    UtilMult2;/**< \brief CPU Utilization Conversion Factor Multiplication 2 */
-
-  uint32   UtilMask;/**< \brief Mask for determining Idle Tick length */
-  uint32   UtilArrayIndex;/**< \brief Index for determining where to write in Util Array */
-  uint32   UtilArrayMask;/**< \brief Mask for determining where to write in Util Array */
-  uint32   UtilArray[HS_UTIL_TIME_DIAG_ARRAY_LENGTH];/**< \brief Array to store time stamps for determining idle tick length */
-
-  uint32   ThisIdleTaskExec;/**< \brief Idle Task Exec Counter */
-  uint32   LastIdleTaskExec;/**< \brief Idle Task Exec Counter at Previous Interval */
-  uint32   LastIdleTaskInterval;/**< \brief Idle Task Increments during Previous Interval */
-  uint32   UtilCycleCounter;/**< \brief Counter to determine when to monitor utilization */
-
-
-   int32   IdleTaskRunStatus;/**< \brief HS Idle Task Run Status */
-  uint32   IdleTaskID;/**< \brief HS Idle Task Task ID */
- 
-} HS_CustomData_t;
-
-HS_CustomData_t HS_CustomData;
-
-/************************************************************************
-** Local function prototypes
-*************************************************************************/
-/************************************************************************/
-/** \brief Task that increments counters
-**
-**  \par Description
-**       This child task is started by the HS initialization process. It
-**       runs at the lowest priority on the system, incrementing a counter
-**       when all other tasks are idle. This counter is used to determine
-**       CPU Hogging (by being non-zero each cycle) and Utilization.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_IdleTask(void);
-
-/************************************************************************/
-/** \brief Increment the CPU Utilization Tracker Counter
-**
-**  \par Description
-**       Utility function that increments the CPU Utilization tracking
-**       counter, called by Idle Task. This counter is used to determine
-**       both utilization and CPU Hogging.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \sa #HS_UtilizationMark
-**
-*************************************************************************/
-void HS_UtilizationIncrement(void);
-
-/************************************************************************/
-/** \brief Mark the CPU Utilization Tracker Counter
-**
-**  \par Description
-**       Utility function that marks the CPU Utilization tracking
-**       counter while saving the previous value to a variable for use in
-**       calculating CPU Utilization and hogging.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-**  \sa #HS_UtilizationIncrement
-**
-*************************************************************************/
-void HS_UtilizationMark(void);
-
-/************************************************************************/
-/** \brief Mark Idle Time Callback from Time App
-**
-**  \par Description
-**       This function marks the idle time for the current interval.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_MarkIdleCallback(void);
-
-/************************************************************************/
-/** \brief Report Utilization Diagnostics information
-**
-**  \par Description
-**       This function reports the Utilization Diagnostics data.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_UtilDiagReport(void);
-
-/************************************************************************/
-/** \brief Set Utilization Paramters
-**
-**  \par Description
-**       This function sets the Utilization Parameters.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_SetUtilParamsCmd(CFE_SB_MsgPtr_t MessagePtr);
-
-/************************************************************************/
-/** \brief Set Utilization Diagnostics Paramater
-**
-**  \par Description
-**       This function sets the utilization diagnostics parameter.
-**
-**  \par Assumptions, External Events, and Notes:
-**       None
-**
-*************************************************************************/
-void HS_SetUtilDiagCmd(CFE_SB_MsgPtr_t MessagePtr);
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -455,7 +144,7 @@ int32 HS_CustomInit(void)
     {
         CFE_EVS_SendEvent(HS_CR_CHILD_TASK_ERR_EID, CFE_EVS_ERROR,
                           "Error Creating Child Task for CPU Utilization Monitoring,RC=0x%08X",
-                          Status);
+                          (unsigned int)Status);
         return (Status);
     }
 
@@ -467,15 +156,14 @@ int32 HS_CustomInit(void)
     {
         CFE_EVS_SendEvent(HS_CR_SYNC_CALLBACK_ERR_EID, CFE_EVS_ERROR,
                           "Error Registering Sync Callback for CPU Utilization Monitoring,RC=0x%08X",
-                          Status);
+                          (unsigned int)Status);
     }
 
     HS_CustomData.UtilMult1 = HS_UTIL_CONV_MULT1;
-    HS_CustomData.UtilMult2 = HS_UTIL_CONV_DIV;
-    HS_CustomData.UtilDiv   = HS_UTIL_CONV_MULT2;
+    HS_CustomData.UtilMult2 = HS_UTIL_CONV_MULT2;
+    HS_CustomData.UtilDiv   = HS_UTIL_CONV_DIV;
     HS_CustomData.UtilMask  = HS_UTIL_DIAG_MASK;
     HS_CustomData.UtilCycleCounter = 0;
-    HS_CustomData.UtilMask = HS_UTIL_DIAG_MASK;
     HS_CustomData.UtilArrayIndex = 0;
     HS_CustomData.UtilArrayMask = HS_UTIL_TIME_DIAG_ARRAY_MASK;
     HS_CustomData.ThisIdleTaskExec = 0;
@@ -495,12 +183,10 @@ int32 HS_CustomInit(void)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void HS_CustomCleanup(void)
 {
-    int32 Status = CFE_SUCCESS;
-
     /*
     ** Unregister the Sync Callback for CPU Monitoring
     */
-    Status = CFE_TIME_UnregisterSynchCallback((CFE_TIME_SynchCallbackPtr_t)&HS_MarkIdleCallback);
+    CFE_TIME_UnregisterSynchCallback((CFE_TIME_SynchCallbackPtr_t)&HS_MarkIdleCallback);
 
     /*
     ** Force the Idle Task to stop running
@@ -510,7 +196,7 @@ void HS_CustomCleanup(void)
     /*
     ** Delete the Idle Task
     */
-    Status = CFE_ES_DeleteChildTask(HS_CustomData.IdleTaskID);
+    CFE_ES_DeleteChildTask(HS_CustomData.IdleTaskID);
 
 } /* end HS_CustomCleanup */
 
@@ -726,9 +412,9 @@ void HS_UtilDiagReport(void)
     
     /* Output the HS_UTIL_DIAG_REPORTS as en event */
     CFE_EVS_SendEvent(HS_UTIL_DIAG_REPORT_EID, CFE_EVS_INFORMATION,
-                      "Mask 0x%08X Base Time Ticks per Idle Ticks (frequency): %i(%i), %i(%i), %i(%i), %i(%i)", HS_CustomData.UtilMask,
-                       OutputValue[OutputOrdinal[0]], OutputCount[OutputOrdinal[0]], OutputValue[OutputOrdinal[1]], OutputCount[OutputOrdinal[1]], 
-                       OutputValue[OutputOrdinal[2]], OutputCount[OutputOrdinal[2]], OutputValue[OutputOrdinal[3]], OutputCount[OutputOrdinal[3]]);
+                      "Mask 0x%08X Base Time Ticks per Idle Ticks (frequency): %i(%i), %i(%i), %i(%i), %i(%i)", (unsigned int)HS_CustomData.UtilMask,
+                       (int)OutputValue[OutputOrdinal[0]], (int)OutputCount[OutputOrdinal[0]], (int)OutputValue[OutputOrdinal[1]], (int)OutputCount[OutputOrdinal[1]], 
+                       (int)OutputValue[OutputOrdinal[2]], (int)OutputCount[OutputOrdinal[2]], (int)OutputValue[OutputOrdinal[3]], (int)OutputCount[OutputOrdinal[3]]);
 
     return;
 
@@ -746,9 +432,12 @@ int32 HS_CustomGetUtil(void)
 {
    int32 CurrentUtil = 0;
 
-   CurrentUtil = HS_UTIL_PER_INTERVAL_TOTAL - (((HS_CustomData.LastIdleTaskInterval * HS_CustomData.UtilMult1) 
-                                               / HS_CustomData.UtilDiv) 
-                                              * HS_CustomData.UtilMult2);   
+   if (HS_CustomData.UtilDiv != 0)
+   {
+      CurrentUtil = HS_UTIL_PER_INTERVAL_TOTAL - (((HS_CustomData.LastIdleTaskInterval * HS_CustomData.UtilMult1) 
+                                                  / HS_CustomData.UtilDiv) 
+                                                 * HS_CustomData.UtilMult2);
+   }
 
    return CurrentUtil;
 }
@@ -775,14 +464,14 @@ void HS_SetUtilParamsCmd(CFE_SB_MsgPtr_t MessagePtr)
             HS_AppData.CmdCount++;
             CFE_EVS_SendEvent (HS_SET_UTIL_PARAMS_DBG_EID, CFE_EVS_DEBUG,
                                "Utilization Parms set: Mult1: %d Div: %d Mult2: %d", 
-                               HS_CustomData.UtilMult1, HS_CustomData.UtilDiv, HS_CustomData.UtilMult2);
+                               (int)HS_CustomData.UtilMult1, (int)HS_CustomData.UtilDiv, (int)HS_CustomData.UtilMult2);
         }
         else
         {
             HS_AppData.CmdErrCount++;
             CFE_EVS_SendEvent (HS_SET_UTIL_PARAMS_ERR_EID, CFE_EVS_ERROR,
                                "Utilization Parms Error: No parameter may be 0: Mult1: %d Div: %d Mult2: %d", 
-                               CmdPtr->Mult1, CmdPtr->Div, CmdPtr->Mult2);
+                               (int)CmdPtr->Mult1, (int)CmdPtr->Div, (int)CmdPtr->Mult2);
         }
     }
 
@@ -806,7 +495,7 @@ void HS_SetUtilDiagCmd(CFE_SB_MsgPtr_t MessagePtr)
         HS_CustomData.UtilMask  = CmdPtr->Mask;
         CFE_EVS_SendEvent (HS_SET_UTIL_DIAG_DBG_EID, CFE_EVS_DEBUG,
                            "Utilization Diagnostics Mask has been set to %08X", 
-                           HS_CustomData.UtilMask);
+                           (unsigned int)HS_CustomData.UtilMask);
     }
 
     return;

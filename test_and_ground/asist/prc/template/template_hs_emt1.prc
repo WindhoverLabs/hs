@@ -88,7 +88,7 @@ $SC_$CPU_HS_EMT[5].NullTerm = 0
 $SC_$CPU_HS_EMT[5].EventID = 10
 $SC_$CPU_HS_EMT[5].ActionType = HS_EMT_ACT_NOACT
 
-for index = 6 to HS_MAX_CRITICAL_EVENTS do
+for index = 6 to HS_MAX_MONITORED_EVENTS do
   $SC_$CPU_HS_EMT[index].AppName = ""
   $SC_$CPU_HS_EMT[index].NullTerm = 0
   $SC_$CPU_HS_EMT[index].EventID = 0
@@ -98,7 +98,7 @@ enddo
 ;; Restore procedure logging
 %liv (log_procedure) = logging
 
-local endmnemonic = "$SC_$CPU_HS_EMT[" & HS_MAX_CRITICAL_EVENTS & "].ActionType"
+local endmnemonic = "$SC_$CPU_HS_EMT[" & HS_MAX_MONITORED_EVENTS & "].ActionType"
 
 ;; Create the Table Load file
 s create_tbl_file_from_cvt ("$CPU",apid,"Event Monitoring Table Load 1","hs_def_emt1",emtTblName,"$SC_$CPU_HS_EMT[1].AppName",endmnemonic)

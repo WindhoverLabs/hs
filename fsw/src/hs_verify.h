@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_verify.h 1.9 2015/03/03 12:15:59EST sstrege Exp  $
+**   $Id: hs_verify.h 1.3 2016/08/05 17:40:38EDT mdeschu Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -18,6 +18,14 @@
 ** Notes:
 **
 **   $Log: hs_verify.h  $
+**   Revision 1.3 2016/08/05 17:40:38EDT mdeschu 
+**   Ticket #26 - Verification of watchdog values not possible at compile time
+**   Revision 1.2 2015/11/12 14:25:15EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.11 2015/05/04 11:00:02EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.10 2015/05/01 16:48:50EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.9 2015/03/03 12:15:59EST sstrege 
 **   Added copyright information
 **   Revision 1.8 2010/11/19 17:58:29EST aschoeni 
@@ -91,31 +99,29 @@
 #endif
 
 /*
-** Maximum number of critical applications
+** Maximum number of monitored applications
 */
-#if HS_MAX_CRITICAL_APPS < 1
-    #error HS_MAX_CRITICAL_APPS cannot be less than 1
-#elif HS_MAX_CRITICAL_APPS > 4294967295
-    #error HS_MAX_CRITICAL_APPS can not exceed 4294967295
+#if HS_MAX_MONITORED_APPS < 1
+    #error HS_MAX_MONITORED_APPS cannot be less than 1
+#elif HS_MAX_MONITORED_APPS > 4294967295
+    #error HS_MAX_MONITORED_APPS can not exceed 4294967295
 #endif
 
 /*
 ** Maximum number of critical events
 */
-#if HS_MAX_CRITICAL_EVENTS < 1
-    #error HS_MAX_CRITICAL_EVENTS cannot be less than 1
-#elif HS_MAX_CRITICAL_EVENTS > 4294967295
-    #error HS_MAX_CRITICAL_EVENTS can not exceed 4294967295
+#if HS_MAX_MONITORED_EVENTS < 1
+    #error HS_MAX_MONITORED_EVENTS cannot be less than 1
+#elif HS_MAX_MONITORED_EVENTS > 4294967295
+    #error HS_MAX_MONITORED_EVENTS can not exceed 4294967295
 #endif
 
 /*
-** Watchdog timeout
-*/
-#if HS_WATCHDOG_TIMEOUT_VALUE < CFE_PSP_WATCHDOG_MIN
-    #error HS_WATCHDOG_TIMEOUT_VALUE cannot be less than CFE_PSP_WATCHDOG_MIN
-#elif HS_WATCHDOG_TIMEOUT_VALUE > CFE_PSP_WATCHDOG_MAX
-    #error HS_WATCHDOG_TIMEOUT_VALUE can not exceed CFE_PSP_WATCHDOG_MAX
-#endif
+ * JPH 2015-06-29 - Removed check of Watchdog timer values
+ *
+ * This is not a valid check anymore, as the HS app does not have knowledge
+ * of PSP Watchdog definitions
+ */
 
 /*
 ** Post Processing Delay
@@ -157,21 +163,39 @@
 */
 #if HS_CMD_PIPE_DEPTH < 1
     #error HS_CMD_PIPE_DEPTH cannot be less than 1
-#elif HS_CMD_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
-    #error HS_CMD_PIPE_DEPTH can not exceed CFE_SB_MAX_PIPE_DEPTH
 #endif
+/*
+ * JPH 2015-06-29 - Removed check of:
+ *  HS_CMD_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
+ *
+ * This is not a valid check anymore, as the HS app does not have knowledge
+ * of CFE_SB_MAX_PIPE_DEPTH.  But if the configuration violates this rule it will
+ * show up as an obvious run-time error so the compile-time check is redundant.
+ */
 
 #if HS_EVENT_PIPE_DEPTH < 1
     #error HS_EVENT_PIPE_DEPTH cannot be less than 1
-#elif HS_EVENT_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
-    #error HS_EVENT_PIPE_DEPTH can not exceed CFE_SB_MAX_PIPE_DEPTH
 #endif
+/*
+ * JPH 2015-06-29 - Removed check of:
+ *  HS_EVENT_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
+ *
+ * This is not a valid check anymore, as the HS app does not have knowledge
+ * of CFE_SB_MAX_PIPE_DEPTH.  But if the configuration violates this rule it will
+ * show up as an obvious run-time error so the compile-time check is redundant.
+ */
 
 #if HS_WAKEUP_PIPE_DEPTH < 1
     #error HS_WAKEUP_PIPE_DEPTH cannot be less than 1
-#elif HS_WAKEUP_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
-    #error HS_WAKEUP_PIPE_DEPTH can not exceed CFE_SB_MAX_PIPE_DEPTH
 #endif
+/*
+ * JPH 2015-06-29 - Removed check of:
+ *  HS_WAKEUP_PIPE_DEPTH > CFE_SB_MAX_PIPE_DEPTH
+ *
+ * This is not a valid check anymore, as the HS app does not have knowledge
+ * of CFE_SB_MAX_PIPE_DEPTH.  But if the configuration violates this rule it will
+ * show up as an obvious run-time error so the compile-time check is redundant.
+ */
 
 /*
 ** Reset Task Delay

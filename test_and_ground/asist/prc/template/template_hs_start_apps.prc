@@ -6,6 +6,10 @@ proc $sc_$cpu_hs_start_apps (step_num)
 ;
 ; History:
 ;  18JUN09 WFM	Initial development of this proc
+;  09/16/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                  commanding and added a hostCPU variable
+;                                  for the utility procs that connect to
+;                                  the host IP.
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 local logging = %liv (log_procedure)
@@ -27,10 +31,13 @@ local stream1, stream2
 local subStepNum = 1
 local HSAppName = "HS"
 
+local ramDir = "RAM:0"
+local hostCPU = "$CPU"
+
 write ";*********************************************************************"
 write "; Step ",step_num, ".1: Determine if the applications are running."
 write ";*********************************************************************"
-start get_file_to_cvt ("RAM:0", "cfe_es_app_info.log", "$sc_$cpu_es_app_info.log", "$CPU")
+start get_file_to_cvt (ramDir,"cfe_es_app_info.log","$sc_$cpu_es_app_info.log",hostCPU)
 
 found_app1 = FALSE
 found_app2 = FALSE
@@ -64,7 +71,7 @@ if (found_app1 = FALSE) then
   ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
   ut_setupevents "$SC", "$CPU", {HSAppName}, HS_INIT_EID, "INFO", 2
 
-  s load_start_app (HSAppName,"$CPU","HS_AppMain")
+  s load_start_app (HSAppName,hostCPU,"HS_AppMain")
 
   ; Wait for app startup events
   ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1, 70
@@ -100,7 +107,7 @@ if (found_app2 = FALSE) then
   ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
   ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_INIT_INF_EID, "INFO", 2
 
-  s load_start_app ("TST_HS","$CPU","TST_HS_AppMain")
+  s load_start_app ("TST_HS",hostCPU,"TST_HS_AppMain")
 
   ; Wait for app startup events
   ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1

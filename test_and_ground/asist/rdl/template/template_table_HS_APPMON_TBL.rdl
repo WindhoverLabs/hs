@@ -22,7 +22,7 @@
 !       HISTORY: 
 !	10/18/11	W. Moleski	Added the Message Action Types to the
 !					ActionType mnemonic.
-!
+!       01/04/12	W. Moleski	Removed VARYING from Packet definition
 !==============================================================================
 !
 #include "osconfig.h"
@@ -42,7 +42,7 @@ TYPES
 END_TYPES
 
 ! HS App Monitor Table
-PACKET Pxxxx APID=nnnn, DESC="$sc $cpu HS AMT Table", VARYING
+PACKET Pxxxx APID=nnnn, DESC="$sc $cpu HS AMT Table"
 !
 #include "cfe_file_header.rdl"
 #include "cfe_tbl_header.rdl" 

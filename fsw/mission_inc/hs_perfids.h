@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_perfids.h 1.4 2015/03/03 12:16:14EST sstrege Exp  $
+**   $Id: hs_perfids.h 1.2 2015/11/12 14:25:21EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,8 @@
 ** Notes:
 **
 **   $Log: hs_perfids.h  $
+**   Revision 1.2 2015/11/12 14:25:21EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
 **   Revision 1.4 2015/03/03 12:16:14EST sstrege 
 **   Added copyright information
 **   Revision 1.3 2010/10/04 14:56:40EDT aschoeni 

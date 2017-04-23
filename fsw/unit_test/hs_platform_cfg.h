@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_platform_cfg.h 1.4 2015/03/03 12:16:28EST sstrege Exp  $
+**   $Id: hs_platform_cfg.h 1.2 2016/09/07 19:17:20EDT mdeschu Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,18 +17,31 @@
 ** Notes:
 **
 **   $Log: hs_platform_cfg.h  $
-**   Revision 1.4 2015/03/03 12:16:28EST sstrege 
+**   Revision 1.2 2016/09/07 19:17:20EDT mdeschu 
+**   Update unit test asserts to match HS updates
+**   
+**   HS_MAX_CRITICAL_APPS/EVENTS -> HS_MAX_MONITORED_APPS/EVENTS
+**   Removal of "Critical" from certain event messages.
+**   Revision 1.3 2016/08/05 09:40:27EDT mdeschu 
+**   Ticket #40: HS hogging initialization
+**   Revision 1.2 2015/11/12 14:25:20EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.15 2015/05/04 11:59:20EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.14 2015/05/04 11:00:06EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.13 2015/05/01 16:48:50EDT lwalling 
+**   Remove critical from application monitor descriptions
+**   Revision 1.12 2015/03/03 12:16:30EST sstrege 
 **   Added copyright information
-**   Revision 1.3 2011/10/17 16:44:28EDT aschoeni 
-**   Updated Unit Tests
-**   Revision 1.1 2010/11/19 18:23:09EST aschoeni 
-**   Initial revision
-**   Member added to project c:/MKSDATA/MKS-REPOSITORY/CFS-REPOSITORY/hs/fsw/unit_test/gcov_noExeCount/project.pj
-**   Revision 1.2 2010/11/19 17:58:29EST aschoeni 
+**   Revision 1.11 2011/10/17 16:50:20EDT aschoeni 
+**   updated calibration parameter notes
+**   Revision 1.10 2011/10/13 18:49:51EDT aschoeni 
+**   Updated for changes to cpu utilization calibration
+**   Revision 1.9 2011/08/15 15:42:55EDT aschoeni 
+**   Updated so application name is configurable
+**   Revision 1.8 2010/11/19 17:58:30EST aschoeni 
 **   Added command to enable and disable CPU Hogging Monitoring
-**   Revision 1.1 2010/11/17 17:09:34EST aschoeni 
-**   Initial revision
-**   Member added to project c:/MKSDATA/MKS-REPOSITORY/CFS-REPOSITORY/hs/fsw/unit_test/project.pj
 **   Revision 1.7 2010/11/16 16:36:28EST aschoeni 
 **   Move HS_MISSION_REV from local header to platform config file
 **   Revision 1.6 2010/10/14 17:45:42EDT aschoeni 
@@ -49,10 +62,28 @@
 #ifndef _hs_platform_cfg_h_
 #define _hs_platform_cfg_h_
 
-/**\hscfg Idle Task Configuration Parameters
+/** \hscfg Application Name
+**
+**  \par Description:
+**       This definition must match the name used at startup by the cFE
+**       Executive Services when creating the HS application.  Note that
+**       application names are also an argument to certain cFE commands.
+**       For example, the application name is needed to access tables
+**       via cFE Table Services commands.
+**
+**  \par Limits:
+**       HS requires that this name be defined, but otherwise places
+**       no limits on the definition.  Refer to CFE Executive Services
+**       for specific information on limits related to application names.
+*/
+#define HS_APP_NAME                    "HS"
+
+/**\hscfg Idle Task Configuration Parameters (custom)
 **
 **  \par Description:
 **       These parameters are used by #CFE_ES_CreateChildTask
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       These limits will vary by platform and available resources.
@@ -62,17 +93,19 @@
 #define HS_IDLE_TASK_STACK_SIZE 4096
 #define HS_IDLE_TASK_FLAGS      0
 
-/**\hscfg Idle Task Priority
+/**\hscfg Idle Task Priority (custom)
 **
 **  \par Description:
 **       This parameter is used to set the priority of the Idle Task. It should
 **       be higher than all other user created tasks, but may need to be set lower
 **       than the maximum value if an OS uses its own minimum priority task.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       This parameter can't be larger than 255.
 */
-#define HS_IDLE_TASK_PRIORITY   245
+#define HS_IDLE_TASK_PRIORITY   252
 
 /** \hscfg Maximum reported execution counters
 **
@@ -93,7 +126,7 @@
 **       cFE size limit for a single buffered table set by the
 **       #CFE_TBL_MAX_SNGL_TABLE_SIZE parameter
 */
-#define HS_MAX_EXEC_CNT_SLOTS            0
+#define HS_MAX_EXEC_CNT_SLOTS             32
 
 /** \hscfg Maximum message action types
 **
@@ -139,10 +172,10 @@
 */
 #define HS_MAX_MSG_ACT_SIZE             16
 
-/** \hscfg Maximum number of critical applications
+/** \hscfg Maximum number of monitored applications
 **
 **  \par Description:
-**       Maximum number of critical applications that can be
+**       Maximum number of applications that can be
 **       monitored to assure check-ins
 **
 **  \par Limits:
@@ -154,18 +187,18 @@
 **       This parameter will dictate the size of the Application
 **       Monitor Table (AMT):
 **
-**       AMT Size = HS_MAX_CRITICAL_APPS * sizeof(#HS_AMTEntry_t)
+**       AMT Size = HS_MAX_MONITORED_APPS * sizeof(#HS_AMTEntry_t)
 **
 **       The total size of this table should not exceed the
 **       cFE size limit for a single buffered table set by the
 **       #CFE_TBL_MAX_SNGL_TABLE_SIZE parameter
 */
-#define HS_MAX_CRITICAL_APPS             32
+#define HS_MAX_MONITORED_APPS             32
 
-/** \hscfg Maximum number of critical events
+/** \hscfg Maximum number of monitored events
 **
 **  \par Description:
-**       Maximum number of critical events that can be
+**       Maximum number of events that can be
 **       monitored
 **
 **  \par Limits:
@@ -177,13 +210,13 @@
 **       This parameter will dictate the size of the Event
 **       Monitor Table (EMT):
 **
-**       EMT Size = HS_MAX_CRITICAL_EVENTS * sizeof(#HS_EMTEntry_t)
+**       EMT Size = HS_MAX_MONITORED_EVENTS * sizeof(#HS_EMTEntry_t)
 **
 **       The total size of this table should not exceed the
 **       cFE size limit for a single buffered table set by the
 **       #CFE_TBL_MAX_SNGL_TABLE_SIZE parameter
 */
-#define HS_MAX_CRITICAL_EVENTS          16
+#define HS_MAX_MONITORED_EVENTS          16
 
 /** \hscfg Watchdog Timeout Value
 **
@@ -260,8 +293,8 @@
 **
 **  \par Description:
 **       Maximum number of times that the HS App will attempt a processor
-**       reset as the result of either a Critical Application Monitor or
-**       Critical Event Monitor Failure
+**       reset as the result of either an Application Monitor or
+**       Event Monitor Failure
 **
 **  \par Limits:
 **       This parameter can't be larger than an unsigned 16 bit
@@ -351,7 +384,7 @@
 /** \hscfg Default State of the Application Monitor
 **
 **  \par Description:
-**       State the Critical Application Monitor is set to when the HS
+**       State the Application Monitor is set to when the HS
 **       application starts.
 **
 **  \par Limits:
@@ -362,7 +395,7 @@
 /** \hscfg Default State of the Event Monitor
 **
 **  \par Description:
-**       State the Critical Event Monitor is set to when the HS
+**       State the Event Monitor is set to when the HS
 **       application starts.
 **
 **  \par Limits:
@@ -395,7 +428,7 @@
 /** \hscfg Application Monitor Table (AMT) filename
 **
 **  \par Description:
-**       Default file to load the Critical Applications Table from
+**       Default file to load the Applications Monitor Table from
 **       during a power-on reset sequence
 **
 **  \par Limits:
@@ -407,7 +440,7 @@
 /** \hscfg Event Monitor Table (EMT) filename
 **
 **  \par Description:
-**       Default file to load the Critical Events Table from
+**       Default file to load the Event Monitor Table from
 **       during a power-on reset sequence
 **
 **  \par Limits:
@@ -440,7 +473,7 @@
 */
 #define HS_MAT_FILENAME                "/cf/apps/hs_mat.tbl"
 
-/** \hscfg CPU Utilization Calls per Mark
+/** \hscfg CPU Utilization Calls per Mark (custom)
 **
 **  \par Description:
 **       Number of times the Mark function must be called before it actually
@@ -448,6 +481,8 @@
 **       calling the Mark function may not run at the same rate as the HS cycle
 **       (or HS may not want to monitor utilization every cycle) so this the
 **       interval to be at least as long as an HS cycle. 
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       This parameter can't be larger than an unsigned 32 bit
@@ -455,11 +490,13 @@
 */
 #define HS_UTIL_CALLS_PER_MARK                         1
 
-/** \hscfg CPU Utilization Cycles per Interval
+/** \hscfg CPU Utilization Cycles per Interval (custom)
 **
 **  \par Description:
 **       Number of HS Cycles it takes to complete a CPU Utilization Interval.
 **       HS will monitor the utilization after this number of HS wakeup cycles.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       This parameter can't be larger than an unsigned 32 bit
@@ -490,48 +527,56 @@
 */
 #define HS_UTIL_PER_INTERVAL_HOGGING            9900
 
-/** \hscfg CPU Utilization Conversion Factor Multiplication 1
+/** \hscfg CPU Utilization Conversion Factor Multiplication 1 (custom)
 **
 **  \par Description:
 **       First multiplication conversion factor. Number of idle ticks is multiplied 
 **       this value first when converting to utils.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
-**       There may be processor dependent limits on value.
+**       There may be processor dependent limits on value. Note that all math
+**       is done using "uint32" values; it is important that the number
+**       of loop iterations in HS_IDLE, times this value, not overflow.
 **
-**       The result of the conversion must be less than an unsigned 32 bit
-**       integer (4294967295).
+**       The result of the conversion must be a 32 bit signed integer 
+**       (between -2147483648 and 2147483647).
 */
 #define HS_UTIL_CONV_MULT1                      2
 
-/** \hscfg CPU Utilization Conversion Factor Division
+/** \hscfg CPU Utilization Conversion Factor Division (custom)
 **
 **  \par Description:
 **       Division conversion factor. Number of idle ticks is divided by this value
 **       after it has been multiplied by #HS_UTIL_CONV_MULT1.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       There may be processor dependent limits on value.
 **
-**       The result of the conversion must be less than an unsigned 32 bit
-**       integer (4294967295).
+**       The result of the conversion must be a 32 bit signed integer 
+**       (between -2147483648 and 2147483647).
 */
 #define HS_UTIL_CONV_DIV                       5
 
-/** \hscfg CPU Utilization Conversion Factor Multiplication 2
+/** \hscfg CPU Utilization Conversion Factor Multiplication 2 (custom)
 **
 **  \par Description:
 **       Second multiplication conversion factor. Number of idle ticks is multiplied 
 **       this value after being divided by #HS_UTIL_CONV_DIV after being multiplied by
 **       #HS_UTIL_CONV_MULT1 when converting to utils.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       There may be processor dependent limits on value.
 **
-**       The result of the conversion must be less than an unsigned 32 bit
-**       integer (4294967295).
+**       The result of the conversion must be a 32 bit signed integer 
+**       (between -2147483648 and 2147483647).
 */
-#define HS_UTIL_CONV_MULT2                      11
+#define HS_UTIL_CONV_MULT2                       11
 
 /** \hscfg CPU Utilization Hogging Timeout
 **
@@ -569,11 +614,13 @@
 */
 #define HS_UTIL_AVERAGE_NUM_INTERVAL                  4
 
-/** \hscfg CPU Utilization Diagnostics Mask
+/** \hscfg CPU Utilization Diagnostics Mask (custom)
 **
 **  \par Description:
 **       Count mask for CPU Utilization Calibration. Time will be marked
 **       when (Counts & Mask) == Mask
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       This parameter can't be larger than an unsigned 32 bit
@@ -581,12 +628,14 @@
 */
 #define HS_UTIL_DIAG_MASK               0xFFFFFFFF
 
-/** \hscfg CPU Utilization Diagnostics Array Configuration
+/** \hscfg CPU Utilization Diagnostics Array Configuration (custom)
 **
 **  \par Description:
 **       Time will be marked into an array of subseconds. The independant parameter
 **       controls the exponent to which 2 is raised to determine the array size. As
 **       such, large values will require significant memory usage.
+**       Note that these values are only necessarily relevant in the
+**       default hs_custom.c.
 **
 **  \par Limits:
 **       This parameter must be less than 32 and may not be negative.
@@ -596,7 +645,7 @@
 #define HS_UTIL_TIME_DIAG_ARRAY_MASK           (HS_UTIL_TIME_DIAG_ARRAY_LENGTH - 1)
 
 
-/** \dscfg Mission specific version number for HS application
+/** \hscfg Mission specific version number for HS application
 **  
 **  \par Description:
 **       An application version number consists of four parts:

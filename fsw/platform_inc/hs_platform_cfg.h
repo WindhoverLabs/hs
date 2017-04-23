@@ -1,6 +1,6 @@
 /*************************************************************************
 ** File:
-**   $Id: hs_platform_cfg.h 1.12 2015/03/03 12:16:30EST sstrege Exp  $
+**   $Id: hs_platform_cfg.h 1.3 2016/08/05 09:40:27EDT mdeschu Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -17,6 +17,16 @@
 ** Notes:
 **
 **   $Log: hs_platform_cfg.h  $
+**   Revision 1.3 2016/08/05 09:40:27EDT mdeschu 
+**   Ticket #40: HS hogging initialization
+**   Revision 1.2 2015/11/12 14:25:20EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.15 2015/05/04 11:59:20EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.14 2015/05/04 11:00:06EDT lwalling 
+**   Change definitions for MAX_CRITICAL to MAX_MONITORED
+**   Revision 1.13 2015/05/01 16:48:50EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.12 2015/03/03 12:16:30EST sstrege 
 **   Added copyright information
 **   Revision 1.11 2011/10/17 16:50:20EDT aschoeni 
@@ -157,10 +167,10 @@
 */
 #define HS_MAX_MSG_ACT_SIZE             16
 
-/** \hscfg Maximum number of critical applications
+/** \hscfg Maximum number of monitored applications
 **
 **  \par Description:
-**       Maximum number of critical applications that can be
+**       Maximum number of applications that can be
 **       monitored to assure check-ins
 **
 **  \par Limits:
@@ -172,18 +182,18 @@
 **       This parameter will dictate the size of the Application
 **       Monitor Table (AMT):
 **
-**       AMT Size = HS_MAX_CRITICAL_APPS * sizeof(#HS_AMTEntry_t)
+**       AMT Size = HS_MAX_MONITORED_APPS * sizeof(#HS_AMTEntry_t)
 **
 **       The total size of this table should not exceed the
 **       cFE size limit for a single buffered table set by the
 **       #CFE_TBL_MAX_SNGL_TABLE_SIZE parameter
 */
-#define HS_MAX_CRITICAL_APPS             32
+#define HS_MAX_MONITORED_APPS             32
 
-/** \hscfg Maximum number of critical events
+/** \hscfg Maximum number of monitored events
 **
 **  \par Description:
-**       Maximum number of critical events that can be
+**       Maximum number of events that can be
 **       monitored
 **
 **  \par Limits:
@@ -195,13 +205,13 @@
 **       This parameter will dictate the size of the Event
 **       Monitor Table (EMT):
 **
-**       EMT Size = HS_MAX_CRITICAL_EVENTS * sizeof(#HS_EMTEntry_t)
+**       EMT Size = HS_MAX_MONITORED_EVENTS * sizeof(#HS_EMTEntry_t)
 **
 **       The total size of this table should not exceed the
 **       cFE size limit for a single buffered table set by the
 **       #CFE_TBL_MAX_SNGL_TABLE_SIZE parameter
 */
-#define HS_MAX_CRITICAL_EVENTS          16
+#define HS_MAX_MONITORED_EVENTS          16
 
 /** \hscfg Watchdog Timeout Value
 **
@@ -278,8 +288,8 @@
 **
 **  \par Description:
 **       Maximum number of times that the HS App will attempt a processor
-**       reset as the result of either a Critical Application Monitor or
-**       Critical Event Monitor Failure
+**       reset as the result of either an Application Monitor or
+**       Event Monitor Failure
 **
 **  \par Limits:
 **       This parameter can't be larger than an unsigned 16 bit
@@ -369,7 +379,7 @@
 /** \hscfg Default State of the Application Monitor
 **
 **  \par Description:
-**       State the Critical Application Monitor is set to when the HS
+**       State the Application Monitor is set to when the HS
 **       application starts.
 **
 **  \par Limits:
@@ -380,7 +390,7 @@
 /** \hscfg Default State of the Event Monitor
 **
 **  \par Description:
-**       State the Critical Event Monitor is set to when the HS
+**       State the Event Monitor is set to when the HS
 **       application starts.
 **
 **  \par Limits:
@@ -413,7 +423,7 @@
 /** \hscfg Application Monitor Table (AMT) filename
 **
 **  \par Description:
-**       Default file to load the Critical Applications Table from
+**       Default file to load the Applications Monitor Table from
 **       during a power-on reset sequence
 **
 **  \par Limits:
@@ -425,7 +435,7 @@
 /** \hscfg Event Monitor Table (EMT) filename
 **
 **  \par Description:
-**       Default file to load the Critical Events Table from
+**       Default file to load the Event Monitor Table from
 **       during a power-on reset sequence
 **
 **  \par Limits:
@@ -521,12 +531,14 @@
 **       default hs_custom.c.
 **
 **  \par Limits:
-**       There may be processor dependent limits on value.
+**       There may be processor dependent limits on value. Note that all math
+**       is done using "uint32" values; it is important that the number
+**       of loop iterations in HS_IDLE, times this value, not overflow.
 **
 **       The result of the conversion must be a 32 bit signed integer 
 **       (between -2147483648 and 2147483647).
 */
-#define HS_UTIL_CONV_MULT1                      2500
+#define HS_UTIL_CONV_MULT1                      1
 
 /** \hscfg CPU Utilization Conversion Factor Division (custom)
 **
@@ -542,7 +554,7 @@
 **       The result of the conversion must be a 32 bit signed integer 
 **       (between -2147483648 and 2147483647).
 */
-#define HS_UTIL_CONV_DIV                       50505
+#define HS_UTIL_CONV_DIV                       10000
 
 /** \hscfg CPU Utilization Conversion Factor Multiplication 2 (custom)
 **

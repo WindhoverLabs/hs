@@ -7,7 +7,7 @@ PROC $sc_$cpu_hs_emt6
 ;  Test Description
 ;	The purpose of this procedure is to generate an Event Monitoring Table
 ;	that contains the maximum entries as defined by the 
-;	HS_MAX_CRITICAL_EVENTS configuration parameter.
+;	HS_MAX_MONITORED_EVENTS configuration parameter.
 ;
 ;  Requirements Tested
 ;       None
@@ -108,7 +108,7 @@ $SC_$CPU_HS_EMT[15].EventID = 2
 $SC_$CPU_HS_EMT[16].AppName = "HK"
 $SC_$CPU_HS_EMT[16].EventID = 4
 
-for index = 1 to HS_MAX_CRITICAL_EVENTS do
+for index = 1 to HS_MAX_MONITORED_EVENTS do
   $SC_$CPU_HS_EMT[index].NullTerm = 0
   $SC_$CPU_HS_EMT[index].ActionType = HS_EMT_ACT_NOACT
 enddo
@@ -116,7 +116,7 @@ enddo
 ;; Restore procedure logging
 %liv (log_procedure) = logging
 
-local endmnemonic = "$SC_$CPU_HS_EMT[" & HS_MAX_CRITICAL_EVENTS & "].ActionType"
+local endmnemonic = "$SC_$CPU_HS_EMT[" & HS_MAX_MONITORED_EVENTS & "].ActionType"
 
 ;; Create the Table Load file
 s create_tbl_file_from_cvt ("$CPU",apid,"Event Monitoring Table Load 6","hs_def_emt6",emtTblName,"$SC_$CPU_HS_EMT[1].AppName",endmnemonic)

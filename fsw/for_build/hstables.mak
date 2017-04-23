@@ -16,7 +16,7 @@ PARENTAPP = hs
 # 1. The table file name must be the same as the C source file name
 # 2. There must be a single C source file for each table
 #
-TABLES = hs_amt_tbl.tbl hs_emt_tbl.tbl hs_xct_tbl.tbl hs_mat_tbl.tbl
+TABLES = hs_amt.tbl hs_emt.tbl hs_xct.tbl hs_mat.tbl
 
 ##################################################################################
 # Normally, nothing has to be changed below this line

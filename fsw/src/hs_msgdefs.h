@@ -1,6 +1,6 @@
 /************************************************************************
 ** File:
-**   $Id: hs_msgdefs.h 1.5 2015/03/03 12:16:09EST sstrege Exp  $
+**   $Id: hs_msgdefs.h 1.2 2015/11/12 14:25:15EST wmoleski Exp  $
 **
 **   Copyright © 2007-2014 United States Government as represented by the 
 **   Administrator of the National Aeronautics and Space Administration. 
@@ -24,6 +24,12 @@
 **   ADD THEM TO hs_msg.h IF NEEDED!
 **
 **   $Log: hs_msgdefs.h  $
+**   Revision 1.2 2015/11/12 14:25:15EST wmoleski 
+**   Checking in changes found with 2010 vs 2009 MKS files for the cFS HS Application
+**   Revision 1.7 2015/05/04 11:59:07EDT lwalling 
+**   Change critical event to monitored event
+**   Revision 1.6 2015/05/01 16:48:30EDT lwalling 
+**   Remove critical from application monitor descriptions
 **   Revision 1.5 2015/03/03 12:16:09EST sstrege 
 **   Added copyright information
 **   Revision 1.4 2010/11/19 17:58:24EST aschoeni 
@@ -132,10 +138,10 @@
 */
 #define HS_RESET_CC                 1
 
-/** \hscmd Enable Critical Applications Monitor
+/** \hscmd Enable Applications Monitor
 **
 **  \par Description
-**       Enables the Critical Applications Monitor
+**       Enables the Applications Monitor
 **
 **  \hscmdmnemonic \HS_ENABLEAPPMON
 **
@@ -165,10 +171,10 @@
 */
 #define HS_ENABLE_APPMON_CC          2
 
-/** \hscmd Disable Critical Applications Monitor
+/** \hscmd Disable Applications Monitor
 **
 **  \par Description
-**       Disables the Critical Applications Monitor
+**       Disables the Applications Monitor
 **
 **  \hscmdmnemonic \HS_DISABLEAPPMON
 **
@@ -198,10 +204,10 @@
 */
 #define HS_DISABLE_APPMON_CC          3
 
-/** \hscmd Enable Critical Events Monitor
+/** \hscmd Enable Events Monitor
 **
 **  \par Description
-**       Enables the Critical Events Monitor
+**       Enables the Events Monitor
 **
 **  \hscmdmnemonic \HS_ENABLEEVENTMON
 **
@@ -231,10 +237,10 @@
 */
 #define HS_ENABLE_EVENTMON_CC          4
 
-/** \hscmd Disable Critical Events Monitor
+/** \hscmd Disable Events Monitor
 **
 **  \par Description
-**       Disables the Critical Events Monitor
+**       Disables the Events Monitor
 **
 **  \hscmdmnemonic \HS_DISABLEEVENTMON
 **

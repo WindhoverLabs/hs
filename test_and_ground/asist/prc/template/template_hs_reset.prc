@@ -97,6 +97,10 @@ PROC $sc_$cpu_hs_reset
 ;	Date		   Name		Description
 ;	06/23/09	Walt Moleski	Original Procedure.
 ;       01/12/11        Walt Moleski    Updated for HS 2.1.0.0
+;       09/19/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -168,6 +172,8 @@ LOCAL rawcmd, index
 local HSAppName = HS_APP_NAME
 local ramDir = "RAM:0"  
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
+
 ;; Table Names
 local AppMonTblName = HSAppName & "." & HS_AMT_TABLENAME
 local EvtMonTblName = HSAppName & "." & HS_EMT_TABLENAME
@@ -185,7 +191,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -213,7 +220,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -232,7 +239,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -251,7 +258,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -270,7 +277,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
@@ -385,17 +392,17 @@ if (p@$SC_$CPU_HS_AppMonState = "Enabled") then
   ut_setrequirements HS_8003, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt","$CPU",amtAPID)
+  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt",hostCPU,amtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_APPS do
+  for index = 1 to HS_MAX_MONITORED_APPS do
     if ($SC_$CPU_HS_AMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_APPS+1) then
+  if (index < HS_MAX_MONITORED_APPS+1) then
     write "<*> Passed (8003) - Critical Application Table has been loaded."
     ut_setrequirements HS_8003, "P"
   else
@@ -410,17 +417,17 @@ if (p@$SC_$CPU_HS_EVTMonState = "Enabled") then
   ut_setrequirements HS_8004, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", "$CPU", emtAPID)
+  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", hostCPU, emtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_EVENTS do
+  for index = 1 to HS_MAX_MONITORED_EVENTS do
     if ($SC_$CPU_HS_EMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_EVENTS+1) then
+  if (index < HS_MAX_MONITORED_EVENTS+1) then
     write "<*> Passed (8004) - Critical Event Table has been loaded."
     ut_setrequirements HS_8004, "P"
   else
@@ -430,7 +437,7 @@ else
 endif
 
 ;; Check the Execution Counter Table
-s get_tbl_to_cvt(ramDir,ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir,ExeCntTblName, "A", "$cpu_hs_dumpxct", hostCPU, xctAPID)
 wait 5
 
 ;; If an entry contains a ResourceName, the table was loaded
@@ -521,7 +528,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -578,17 +586,17 @@ if (p@$SC_$CPU_HS_AppMonState = "Enabled") then
   ut_setrequirements HS_8003, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt","$CPU",amtAPID)
+  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt",hostCPU,amtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_APPS do
+  for index = 1 to HS_MAX_MONITORED_APPS do
     if ($SC_$CPU_HS_AMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_APPS+1) then
+  if (index < HS_MAX_MONITORED_APPS+1) then
     write "<*> Passed (8003) - Critical Application Table has been loaded."
     ut_setrequirements HS_8003, "P"
   else
@@ -603,17 +611,17 @@ if (p@$SC_$CPU_HS_EVTMonState = "Enabled") then
   ut_setrequirements HS_8004, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", "$CPU", emtAPID)
+  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", hostCPU, emtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_EVENTS do
+  for index = 1 to HS_MAX_MONITORED_EVENTS do
     if ($SC_$CPU_HS_EMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_EVENTS+1) then
+  if (index < HS_MAX_MONITORED_EVENTS+1) then
     write "<*> Passed (8004) - Critical Event Table has been loaded."
     ut_setrequirements HS_8004, "P"
   else
@@ -623,7 +631,7 @@ else
 endif
 
 ;; Check the Execution Counter Table
-s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", hostCPU, xctAPID)
 wait 5
 
 ;; If an entry contains a ResourceName, the table was loaded
@@ -794,17 +802,17 @@ if (p@$SC_$CPU_HS_AppMonState = "Enabled") then
   ut_setrequirements HS_8003, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt","$CPU",amtAPID)
+  s get_tbl_to_cvt(ramDir,EvtMonTblName,"A","$cpu_hs_dumpamt",hostCPU,amtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_APPS do
+  for index = 1 to HS_MAX_MONITORED_APPS do
     if ($SC_$CPU_HS_AMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_APPS+1) then
+  if (index < HS_MAX_MONITORED_APPS+1) then
     write "<*> Passed (8003) - Critical Application Table has been loaded."
     ut_setrequirements HS_8003, "P"
   else
@@ -819,17 +827,17 @@ if (p@$SC_$CPU_HS_EVTMonState = "Enabled") then
   ut_setrequirements HS_8004, "P"
 else
   ;; Dump the table 
-  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", "$CPU", emtAPID)
+  s get_tbl_to_cvt(ramDir, EvtMonTblName, "A", "$cpu_hs_dumpemt", hostCPU, emtAPID)
   wait 5
 
   ;; If an entry contains an AppName, the table was loaded
-  for index = 1 to HS_MAX_CRITICAL_EVENTS do
+  for index = 1 to HS_MAX_MONITORED_EVENTS do
     if ($SC_$CPU_HS_EMT[index].AppName <> "") then
       break
     endif
   enddo
 
-  if (index < HS_MAX_CRITICAL_EVENTS+1) then
+  if (index < HS_MAX_MONITORED_EVENTS+1) then
     write "<*> Passed (8004) - Critical Event Table has been loaded."
     ut_setrequirements HS_8004, "P"
   else
@@ -839,7 +847,7 @@ else
 endif
 
 ;; Check the Execution Counter Table
-s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", "$CPU", xctAPID)
+s get_tbl_to_cvt(ramDir, ExeCntTblName, "A", "$cpu_hs_dumpxct", hostCPU, xctAPID)
 wait 5
 
 ;; If an entry contains a ResourceName, the table was loaded
@@ -866,13 +874,13 @@ write ";*********************************************************************"
 write ";  Step 4.1: Remove the default tables from the onboard processor."
 write ";*********************************************************************"
 ;; Remove the default table files
-s ftp_file (defTblDir,"na",amtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",amtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",emtFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",emtFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",matFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",matFileName,hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na",xctFileName,"$CPU","R")
+s ftp_file (defTblDir,"na",xctFileName,hostCPU,"R")
 wait 5
 
 write ";*********************************************************************"
@@ -884,7 +892,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -968,7 +977,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -1189,28 +1199,28 @@ write ";***********************************************************************"
 s $sc_$cpu_hs_amt11
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt11",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt11",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
 s $sc_$cpu_hs_emt8
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt8",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt8",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
 s $sc_$cpu_hs_mat2
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat2",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat2",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
 s $sc_$cpu_hs_xct4
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct4",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct4",xctFileName,hostCPU,"P")
 wait 10
 
 write ";*********************************************************************"
@@ -1222,7 +1232,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -1321,7 +1332,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";*********************************************************************"
@@ -1540,18 +1552,18 @@ write ";  Step 5.0: Startup Synch Tests "
 write ";*********************************************************************"
 write ";  Step 5.1: Download the current startup script. "
 write ";*********************************************************************"
-s ftp_file (defTblDir,"cfe_es_startup.scr","hs_step51_startup.scr","$CPU","G")
+s ftp_file (defTblDir,"cfe_es_startup.scr","hs_step51_startup.scr",hostCPU,"G")
 wait 10
 
 write ";*********************************************************************"
 write ";  Step 5.2: Upload a new startup script that contains HS and TST_HS"
 write ";*********************************************************************"
-s ftp_file (defTblDir,"hs_step52_startup.scr","cfe_es_startup.scr","$CPU","P")
+s ftp_file (defTblDir,"hs_step52_startup.scr","cfe_es_startup.scr",hostCPU,"P")
 
 ;; Upload the apps
-s load_app(defTblDir,HSAppName,"$CPU")
+s load_app(defTblDir,HSAppName,hostCPU)
 wait 5
-s load_app(defTblDir,"TST_HS","$CPU")
+s load_app(defTblDir,"TST_HS",hostCPU)
 wait 5
 
 write ";*********************************************************************"
@@ -1576,19 +1588,19 @@ write ";***********************************************************************"
 write ";  Step 5.4: Upload the default definition tables. "
 write ";***********************************************************************"
 ;; Application Monitoring Table
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";*********************************************************************"
@@ -1600,7 +1612,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -1717,7 +1730,7 @@ wait hsTimeout
 write ";*********************************************************************"
 write ";  Step 5.14: Upload a new startup script that only contains HS "
 write ";*********************************************************************"
-s ftp_file (defTblDir,"hs_step514_startup.scr","cfe_es_startup.scr","$CPU","P")
+s ftp_file (defTblDir,"hs_step514_startup.scr","cfe_es_startup.scr",hostCPU,"P")
 wait 10
 
 write ";*********************************************************************"
@@ -1746,7 +1759,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -1755,7 +1769,7 @@ write ";***********************************************************************"
 ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
 ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_INIT_INF_EID, "INFO", 2
                                                                                 
-s load_start_app ("TST_HS","$CPU","TST_HS_AppMain")
+s load_start_app ("TST_HS",hostCPU,"TST_HS_AppMain")
                                                                                 
 ; Wait for app startup events
 ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1
@@ -1862,7 +1876,7 @@ wait 20
 write ";*********************************************************************"
 write ";  Step 5.25: Upload a new startup script that only contains HS "
 write ";*********************************************************************"
-s ftp_file (defTblDir,"hs_step525_startup.scr","cfe_es_startup.scr","$CPU","P")
+s ftp_file (defTblDir,"hs_step525_startup.scr","cfe_es_startup.scr",hostCPU,"P")
 wait 10
 
 write ";*********************************************************************"
@@ -1874,7 +1888,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -1883,7 +1898,7 @@ write ";***********************************************************************"
 ut_setupevents "$SC", "$CPU", "CFE_ES", CFE_ES_START_INF_EID, "INFO", 1
 ut_setupevents "$SC", "$CPU", "TST_HS", TST_HS_INIT_INF_EID, "INFO", 2
                                                                                 
-s load_start_app ("TST_HS","$CPU","TST_HS_AppMain")
+s load_start_app ("TST_HS",hostCPU,"TST_HS_AppMain")
                                                                                 
 ; Wait for app startup events
 ut_tlmwait  $SC_$CPU_find_event[2].num_found_messages, 1
@@ -1929,13 +1944,13 @@ write ";  Step 6.0: Clean-up - Send the Power-On Reset command.             "
 write ";*********************************************************************"
 write ";  Step 6.1: Upload the original startup script downloaded in Step 5.1"
 write ";*********************************************************************"
-s ftp_file (defTblDir,"hs_step51_startup.scr","cfe_es_startup.scr","$CPU","P")
+s ftp_file (defTblDir,"hs_step51_startup.scr","cfe_es_startup.scr",hostCPU,"P")
 wait 10
 
 ;; Remove the hs & tst_hs object files
-s ftp_file (defTblDir,"na","hs.o","$CPU","R")
+s ftp_file (defTblDir,"na","hs.o",hostCPU,"R")
 wait 5
-s ftp_file (defTblDir,"na","tst_hs.o","$CPU","R")
+s ftp_file (defTblDir,"na","tst_hs.o",hostCPU,"R")
 wait 5
 
 write ";*********************************************************************"
@@ -1947,7 +1962,8 @@ wait 10
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 

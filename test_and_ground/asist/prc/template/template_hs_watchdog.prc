@@ -67,6 +67,10 @@ PROC $sc_$cpu_hs_watchdog
 ;	Date		   Name		Description
 ;	06/30/09	Walt Moleski	Original Procedure.
 ;	01/12/11	Walt Moleski	Updated for HS 2.1.0.0
+;       09/19/16        Walt Moleski    Updated for HS 2.3.0.0 using CPU1 for
+;                                       commanding and added a hostCPU variable
+;                                       for the utility procs that connect to
+;                                       the host IP.
 ;
 ;  Arguments
 ;	None.
@@ -127,6 +131,7 @@ local cfe_requirements[0 .. ut_req_array_size] = ["HS_4000","HS_4000.1","HS_4000
 LOCAL rawcmd, stream, index
 local HSAppName = "HS"  
 local defTblDir = "CF:0/apps"
+local hostCPU = "$CPU"
 
 write ";***********************************************************************"
 write ";  Step 1.0: Health and Safety Test Setup."
@@ -139,7 +144,8 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -167,7 +173,7 @@ enddo
 write "==> Default Application Monitoring Table filename = '",amtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_amt1",amtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_amt1",amtFileName,hostCPU,"P")
 wait 10
 
 ;; Event Monitoring Table
@@ -186,7 +192,7 @@ enddo
 write "==> Default Event Monitoring Table filename = '",emtFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_emt1",emtFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_emt1",emtFileName,hostCPU,"P")
 wait 10
 
 ;; Message Actions Table
@@ -205,7 +211,7 @@ enddo
 write "==> Default Message Actions Table filename = '",matFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_mat1",matFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_mat1",matFileName,hostCPU,"P")
 wait 10
 
 ;; Execution Counter Table
@@ -224,7 +230,7 @@ enddo
 write "==> Default Execution Counter Table filename = '",xctFileName,"'"
 
 ;; Upload the file created above to the default location
-s ftp_file (defTblDir,"hs_def_xct1",xctFileName,"$CPU","P")
+s ftp_file (defTblDir,"hs_def_xct1",xctFileName,hostCPU,"P")
 wait 10
 
 write ";***********************************************************************"
@@ -334,7 +340,8 @@ ut_setrequirements HS_40001, "A"
 close_data_center
 wait 75
 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 write ";***********************************************************************"
@@ -407,7 +414,8 @@ wait 10
 close_data_center
 wait 75
                                                                                 
-cfe_startup $CPU
+;;cfe_startup $CPU
+cfe_startup {hostCPU}
 wait 5
 
 
