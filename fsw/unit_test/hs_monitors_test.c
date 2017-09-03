@@ -1331,6 +1331,7 @@ void HS_ValidateMATable_Test_InvalidEnableState(void)
 {
     int32   Result;
     uint32  i;
+    char	ExpectedEventText[CFE_EVS_MAX_MESSAGE_LENGTH];
 
     HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
 
@@ -1347,9 +1348,11 @@ void HS_ValidateMATable_Test_InvalidEnableState(void)
     Result = HS_ValidateMATable(HS_AppData.MATablePtr);
     
     /* Verify results */
+    snprintf(ExpectedEventText, CFE_EVS_MAX_MESSAGE_LENGTH,
+    		"MsgActs verify err: Entry = 0, Err = -3, Length = 8, ID = %d", HS_CMD_MID);
     UtAssert_True
-        (Ut_CFE_EVS_EventSent(HS_MATVAL_ERR_EID, CFE_EVS_ERROR, "MsgActs verify err: Entry = 0, Err = -3, Length = 8, ID = 6318"),
-        "MsgActs verify err: Entry = 0, Err = -3, Length = 8, ID = 6318");
+        (Ut_CFE_EVS_EventSent(HS_MATVAL_ERR_EID, CFE_EVS_ERROR, ExpectedEventText),
+        		ExpectedEventText);
 
     UtAssert_True
         (Ut_CFE_EVS_EventSent(HS_MATVAL_INF_EID, CFE_EVS_INFORMATION, "MsgActs verify results: good = 0, bad = 8, unused = 0"),
@@ -1399,6 +1402,7 @@ void HS_ValidateMATable_Test_LengthTooHigh(void)
 {
     int32   Result;
     uint32  i;
+    char	ExpectedEventText[CFE_EVS_MAX_MESSAGE_LENGTH];
 
     HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
 
@@ -1419,9 +1423,11 @@ void HS_ValidateMATable_Test_LengthTooHigh(void)
     Result = HS_ValidateMATable(HS_AppData.MATablePtr);
     
     /* Verify results */
+    snprintf(ExpectedEventText, CFE_EVS_MAX_MESSAGE_LENGTH,
+    		"MsgActs verify err: Entry = 0, Err = -2, Length = 32769, ID = %d", HS_CMD_MID);
     UtAssert_True
-        (Ut_CFE_EVS_EventSent(HS_MATVAL_ERR_EID, CFE_EVS_ERROR, "MsgActs verify err: Entry = 0, Err = -2, Length = 32769, ID = 6318"),
-        "MsgActs verify err: Entry = 0, Err = -2, Length = 32769, ID = 6318");
+        (Ut_CFE_EVS_EventSent(HS_MATVAL_ERR_EID, CFE_EVS_ERROR, ExpectedEventText),
+        		ExpectedEventText);
 
     UtAssert_True
         (Ut_CFE_EVS_EventSent(HS_MATVAL_INF_EID, CFE_EVS_INFORMATION, "MsgActs verify results: good = 0, bad = 8, unused = 0"),

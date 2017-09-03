@@ -290,6 +290,7 @@ void HS_AppPipe_Test_DisableCPUHog(void)
 void HS_AppPipe_Test_InvalidCC(void)
 {
     HS_NoArgsCmd_t    CmdPacket;
+    char			  ExpectedEventText[CFE_EVS_MAX_MESSAGE_LENGTH];
 
     CFE_SB_InitMsg (&CmdPacket, HS_CMD_MID, sizeof(HS_NoArgsCmd_t), TRUE);
     CFE_SB_SetCmdCode((CFE_SB_MsgPtr_t)&CmdPacket, 99);
@@ -300,9 +301,11 @@ void HS_AppPipe_Test_InvalidCC(void)
     /* Verify results */
     UtAssert_True (HS_AppData.CmdErrCount == 1, "HS_AppData.CmdErrCount == 1");
 
+    snprintf(ExpectedEventText, CFE_EVS_MAX_MESSAGE_LENGTH,
+    		"Invalid command code: ID = 0x%04X, CC = 99", HS_CMD_MID);
     UtAssert_True
-        (Ut_CFE_EVS_EventSent(HS_CC_ERR_EID, CFE_EVS_ERROR, "Invalid command code: ID = 0x18AE, CC = 99"),
-        "Invalid command code: ID = 0x18AE, CC = 99");
+        (Ut_CFE_EVS_EventSent(HS_CC_ERR_EID, CFE_EVS_ERROR, ExpectedEventText),
+        		ExpectedEventText);
 
     UtAssert_True (Ut_CFE_EVS_GetEventQueueDepth() == 1, "Ut_CFE_EVS_GetEventQueueDepth() == 1");
 
@@ -1180,6 +1183,7 @@ void HS_VerifyMsgLength_Test_LengthErrorHK(void)
 {
     HS_NoArgsCmd_t    CmdPacket;
     boolean           Result;
+    char			 ExpectedEventText[CFE_EVS_MAX_MESSAGE_LENGTH];
 
     CFE_SB_InitMsg (&CmdPacket, HS_SEND_HK_MID, 1, TRUE);
     CFE_SB_SetCmdCode((CFE_SB_MsgPtr_t)&CmdPacket, 0);
@@ -1190,9 +1194,11 @@ void HS_VerifyMsgLength_Test_LengthErrorHK(void)
     /* Verify results */
     UtAssert_True (Result == FALSE, "Result == FALSE");
 
+    snprintf(ExpectedEventText, CFE_EVS_MAX_MESSAGE_LENGTH,
+    		"Invalid HK request msg length: ID = 0x%04X, CC = 0, Len = 1, Expected = 8", HS_SEND_HK_MID);
     UtAssert_True
-        (Ut_CFE_EVS_EventSent(HS_HKREQ_LEN_ERR_EID, CFE_EVS_ERROR, "Invalid HK request msg length: ID = 0x18AF, CC = 0, Len = 1, Expected = 8"),
-        "Invalid HK request msg length: ID = 0x18AF, CC = 0, Len = 1, Expected = 8");
+        (Ut_CFE_EVS_EventSent(HS_HKREQ_LEN_ERR_EID, CFE_EVS_ERROR, ExpectedEventText),
+        		ExpectedEventText);
 
     UtAssert_True (Ut_CFE_EVS_GetEventQueueDepth() == 1, "Ut_CFE_EVS_GetEventQueueDepth() == 1");
 
@@ -1202,6 +1208,7 @@ void HS_VerifyMsgLength_Test_LengthErrorNonHK(void)
 {
     HS_NoArgsCmd_t    CmdPacket;
     boolean           Result;
+    char			 ExpectedEventText[CFE_EVS_MAX_MESSAGE_LENGTH];
 
     CFE_SB_InitMsg (&CmdPacket, HS_CMD_MID, 1, TRUE);
     CFE_SB_SetCmdCode((CFE_SB_MsgPtr_t)&CmdPacket, 0);
@@ -1214,9 +1221,11 @@ void HS_VerifyMsgLength_Test_LengthErrorNonHK(void)
 
     UtAssert_True (HS_AppData.CmdErrCount == 1, "HS_AppData.CmdErrCount == 1");
 
+    snprintf(ExpectedEventText, CFE_EVS_MAX_MESSAGE_LENGTH,
+    		"Invalid msg length: ID = 0x%04X, CC = 0, Len = 1, Expected = 8", HS_CMD_MID);
     UtAssert_True
-        (Ut_CFE_EVS_EventSent(HS_LEN_ERR_EID, CFE_EVS_ERROR, "Invalid msg length: ID = 0x18AE, CC = 0, Len = 1, Expected = 8"),
-        "Invalid msg length: ID = 0x18AE, CC = 0, Len = 1, Expected = 8");
+        (Ut_CFE_EVS_EventSent(HS_LEN_ERR_EID, CFE_EVS_ERROR, ExpectedEventText),
+        		ExpectedEventText);
 
     UtAssert_True (Ut_CFE_EVS_GetEventQueueDepth() == 1, "Ut_CFE_EVS_GetEventQueueDepth() == 1");
 
