@@ -68,8 +68,8 @@ int32 HS_CMDS_TEST_CFE_ES_GetTaskInfoHook(CFE_ES_TaskInfo_t *TaskInfo, uint32 Ta
 
 void HS_AppPipe_Test_SendHK(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
 
     HS_AppData.EMTablePtr = EMTable;
 
@@ -117,8 +117,8 @@ void HS_AppPipe_Test_Reset(void)
 
 void HS_AppPipe_Test_EnableAppMon(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -333,8 +333,8 @@ void HS_AppPipe_Test_InvalidMID(void)
 
 void HS_HousekeepingReq_Test_InvalidEventMon(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
     uint32            TableIndex;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -397,9 +397,9 @@ void HS_HousekeepingReq_Test_InvalidEventMon(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_HousekeepingReq_Test_AllFlagsEnabled(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
-    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
+    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS] = {0};
     uint8             ExpectedStatusFlags = 0;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -470,9 +470,9 @@ void HS_HousekeepingReq_Test_AllFlagsEnabled(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_HousekeepingReq_Test_ResourceTypeAppMain(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
-    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
+    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS] = {0};
     uint32            TableIndex;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -545,9 +545,9 @@ void HS_HousekeepingReq_Test_ResourceTypeAppMain(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_HousekeepingReq_Test_ResourceTypeAppChild(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
-    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
+    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS] = {0};
     uint32            TableIndex;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -620,9 +620,9 @@ void HS_HousekeepingReq_Test_ResourceTypeAppChild(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_HousekeepingReq_Test_ResourceTypeDevice(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
-    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
+    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS] = {0};
     uint32            TableIndex;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -689,9 +689,9 @@ void HS_HousekeepingReq_Test_ResourceTypeDevice(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_HousekeepingReq_Test_ResourceTypeISR(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS];
-    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_EVENTS] = {0};
+    HS_XCTEntry_t     XCTable[HS_MAX_EXEC_CNT_SLOTS] = {0};
     uint32            TableIndex;
 
     HS_AppData.EMTablePtr = EMTable;
@@ -816,8 +816,8 @@ void HS_ResetCounters_Test(void)
 
 void HS_EnableAppMonCmd_Test(void)
 {
-    HS_NoArgsCmd_t    CmdPacket;
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_NoArgsCmd_t    CmdPacket = {0};
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -1234,7 +1234,7 @@ void HS_VerifyMsgLength_Test_LengthErrorNonHK(void)
 #if HS_MAX_EXEC_CNT_SLOTS != 0
 void HS_AcquirePointers_Test_Nominal(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -1400,7 +1400,7 @@ void HS_AppMonStatusRefresh_Test_CycleCountZero(void)
 
 void HS_AppMonStatusRefresh_Test_ActionTypeNOACT(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
     uint32            i;
 
     HS_AppData.AMTablePtr = AMTable;

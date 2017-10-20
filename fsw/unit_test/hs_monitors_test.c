@@ -69,7 +69,7 @@ int32 HS_MONITORS_TEST_CFE_ES_GetAppInfoHook1(CFE_ES_AppInfo_t *AppInfo, uint32 
 
 void HS_MonitorApplications_Test_AppNameNotFound(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -96,7 +96,7 @@ void HS_MonitorApplications_Test_AppNameNotFound(void)
 
 void HS_MonitorApplications_Test_GetExeCountFailure(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -125,7 +125,7 @@ void HS_MonitorApplications_Test_GetExeCountFailure(void)
 
 void HS_MonitorApplications_Test_ProcessorResetError(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -168,7 +168,7 @@ void HS_MonitorApplications_Test_ProcessorResetError(void)
 
 void HS_MonitorApplications_Test_ProcessorResetActionLimitError(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -208,7 +208,7 @@ void HS_MonitorApplications_Test_ProcessorResetActionLimitError(void)
 
 void HS_MonitorApplications_Test_RestartAppErrorsGetAppInfoSuccess(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -250,7 +250,7 @@ void HS_MonitorApplications_Test_RestartAppErrorsGetAppInfoSuccess(void)
 
 void HS_MonitorApplications_Test_RestartAppErrorsGetAppInfoNotSuccess(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -288,7 +288,7 @@ void HS_MonitorApplications_Test_RestartAppErrorsGetAppInfoNotSuccess(void)
 
 void HS_MonitorApplications_Test_FailError(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
 
     HS_AppData.AMTablePtr = AMTable;
 
@@ -322,8 +322,8 @@ void HS_MonitorApplications_Test_FailError(void)
 
 void HS_MonitorApplications_Test_MsgActsNOACT(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -360,8 +360,8 @@ void HS_MonitorApplications_Test_MsgActsNOACT(void)
 
 void HS_MonitorApplications_Test_MsgActsErrorDefault(void)
 {
-    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
+    HS_AMTEntry_t     AMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -408,9 +408,9 @@ void HS_MonitorApplications_Test_MsgActsErrorDefault(void)
 
 void HS_MonitorEvent_Test_ProcErrorReset(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -451,9 +451,9 @@ void HS_MonitorEvent_Test_ProcErrorReset(void)
 
 void HS_MonitorEvent_Test_ProcErrorNoReset(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -490,9 +490,9 @@ void HS_MonitorEvent_Test_ProcErrorNoReset(void)
 
 void HS_MonitorEvent_Test_AppRestartErrors(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -530,9 +530,9 @@ void HS_MonitorEvent_Test_AppRestartErrors(void)
 
 void HS_MonitorEvent_Test_OnlySecondAppRestartError(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -566,9 +566,9 @@ void HS_MonitorEvent_Test_OnlySecondAppRestartError(void)
 
 void HS_MonitorEvent_Test_DeleteErrors(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -606,9 +606,9 @@ void HS_MonitorEvent_Test_DeleteErrors(void)
 
 void HS_MonitorEvent_Test_OnlySecondDeleteError(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 
@@ -642,9 +642,9 @@ void HS_MonitorEvent_Test_OnlySecondDeleteError(void)
 
 void HS_MonitorEvent_Test_MsgActsError(void)
 {
-    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS];
-    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES];
-    CFE_EVS_Packet_t  Packet;
+    HS_EMTEntry_t     EMTable[HS_MAX_MONITORED_APPS] = {0};
+    HS_MATEntry_t     MATable[HS_MAX_MSG_ACT_TYPES] = {0};
+    CFE_EVS_Packet_t  Packet = {0};
 
     HS_AppData.MATablePtr = &MATable[0];
 

@@ -1146,7 +1146,7 @@ void HS_ProcessMain_Test(void)
 {
     int32 Result;
 
-    HS_AMTEntry_t  AMTable;
+    HS_AMTEntry_t  AMTable = {0};
 
     HS_AppData.AMTablePtr = &AMTable;
 
@@ -1188,9 +1188,9 @@ void HS_ProcessMain_Test(void)
 void HS_ProcessCommands_Test(void)
 {
     int32           Result;
-    HS_NoArgsCmd_t  CmdPacket;
+    HS_NoArgsCmd_t  CmdPacket = {0};
     uint32          i;
-    HS_EMTEntry_t   EMTable[HS_MAX_MONITORED_EVENTS];
+    HS_EMTEntry_t   EMTable[HS_MAX_MONITORED_EVENTS] = {0};
 
     CFE_SB_InitMsg (&CmdPacket, HS_CMD_MID, sizeof(HS_NoArgsCmd_t), TRUE);
     CFE_SB_SetCmdCode((CFE_SB_MsgPtr_t)&CmdPacket, HS_NOOP_CC);
