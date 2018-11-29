@@ -3,83 +3,95 @@
     header
       span.widget-icon
         i.fa.fa-table
-      h2 AMC - Command and Data Handling
+      h2 HS - Command and Data Handling
     div.widget-body.table-responsive
       table.table.table-condensed
         tbody
           tr
             th Cmd Count
             td
-              div(data-cdr={tlm:[{name:'/AMC/AMC_HkTlm_t/usCmdCnt'}],indicator:'text'}) ---
+              div(data-cdr={tlm:[{name:'/HS/HS_HkPacket_t/CmdCount'}],indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/Noop'},indicator:'cmd'}) No-Op  
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/Reset'},indicator:'cmd'}) Reset  
           tr
             th Error Count
             td
-              div(data-cdr={tlm:[{name:'/AMC/AMC_HkTlm_t/usCmdErrCnt'}],indicator:'text'}) ---
-          tr
-            th Output 0
+              div(data-cdr={tlm:[{name:'/HS/HS_HkPacket_t/CmdErrCount'}],indicator:'text'}) ---
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[0]'}], indicator:'text'}) ---
+            
           tr
-            th Output 1
+            th App Monitor
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[1]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentAppMonState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableAppMon'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableAppMon'},indicator:'cmd'}) Disable 
           tr
-            th Output 2
+            th Event Monitor
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[2]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentEventMonState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableEventMon'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableEventMon'},indicator:'cmd'}) Disable 
           tr
-            th Output 3
+            th Aliveness Monitor
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[3]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentAlivenessState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableAliveness'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableAliveness'},indicator:'cmd'}) Disable 
           tr
-            th Output 4
+            th CPU Hog Monitor
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[4]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentCPUHogState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableCpuHog'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableCpuHog'},indicator:'cmd'}) Disable 
           tr
-            th Output 5
+            th CDS In Use
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[5]'}], indicator:'text'}) ---
+              span -NA-
+            td
           tr
-            th Output 6
+            th Resets Performed
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[6]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/ResetsPerformed'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/ResetResetsPerformed'},indicator:'cmd'}) Reset 
           tr
-            th Output 7
+            th Max Resets
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[7]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/MaxResets'}], indicator:'text'}) ---
+            td  
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetMaxResets'},indicator:'cmd'}) Set 
           tr
-            th Output 8
+            th Events Monitored
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[8]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/EventsMonitoredCount'}], indicator:'text'}) ---
+            td
           tr
-            th Output 9
+            th Invalid Events Monitored
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[9]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/InvalidEventMonCount'}], indicator:'text'}) ---
+            td  
           tr
-            th Output 10
+            th Msg Act Exec
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[10]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/MsgActExec'}], indicator:'text'}) ---
+            td
           tr
-            th Output 11
+            th CPU Average
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[11]'}], indicator:'text'}) ---
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/UtilCpuAvg'}], indicator:'text'}) ---
+            td
           tr
-            th Output 12
+            th CPU Peak
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[12]'}], indicator:'text'}) ---
-          tr
-            th Output 13
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/UtilCpuPeak'}], indicator:'text'}) ---
             td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[13]'}], indicator:'text'}) ---
-          tr
-            th Output 14
-            td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[14]'}], indicator:'text'}) ---
-          tr
-            th Output 15
-            td
-              span(data-cdr={tlm: [{name:'/AMC/AMC_HkTlm_t/Output[15]'}], indicator:'text'}) ---
               
     footer.btn-group(role="group")      
-      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/AMC/Noop'},indicator:'cmd'}) No-Op    
-      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/AMC/Reset'},indicator:'cmd'}) Reset
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/ReportDiag'},indicator:'cmd'}) Report Diag 
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetUtilParams'},indicator:'cmd'}) Set Util Params 
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetUtilDiag'},indicator:'cmd'}) Set Util Diag 
