@@ -11,7 +11,7 @@ module.exports = class CfeCdrPlugin extends CdrPlugin {
 
   getContent() {
     var result = {
-      shortDescription: 'HS',
+      shortDescription: 'Health Services',
       longDescription: 'Health Services.',
       nodes: {
         main: {
