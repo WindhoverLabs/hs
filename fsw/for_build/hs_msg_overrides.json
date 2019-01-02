@@ -1,0 +1,113 @@
+{
+    "Airliner": {
+        "apps": {
+            "HS": {
+                "operations": {
+                    "Noop":                   { "airliner_cc":  0, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "Reset":                  { "airliner_cc":  1, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "EnableAppMon":           { "airliner_cc":  2, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "DisableAppMon":          { "airliner_cc":  3, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "EnableEventMon":         { "airliner_cc":  4, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "DisableEventMon":        { "airliner_cc":  5, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "EnableAliveness":        { "airliner_cc":  6, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "DisableAliveness":       { "airliner_cc":  7, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "ResetResetsPerformed":   { "airliner_cc":  8, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "SetMaxResets":           { "airliner_cc":  9, "macro": "HS_CMD_MID", "airliner_msg": "HS_SetMaxResetsCmd_t" },
+                    "EnableCpuHog":           { "airliner_cc":  10, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "DisableCpuHog":          { "airliner_cc":  11, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "ReportDiag":             { "airliner_cc":  12, "macro": "HS_CMD_MID", "airliner_msg": "" },
+                    "SetUtilParams":          { "airliner_cc":  13, "macro": "HS_CMD_MID", "airliner_msg": "HS_SetUtilParamsCmd_t" },
+                    "SetUtilDiag":            { "airliner_cc":  14, "macro": "HS_CMD_MID", "airliner_msg": "HS_SetUtilDiagCmd_t" },
+                    "HS_HkPacket_t":          { "airliner_cc":  -1, "macro": "HS_HK_TLM_MID", "airliner_msg": "HS_HkPacket_t" },
+                    "Wakeup":                 { "airliner_cc":  0, "macro": "HS_WAKEUP_MID", "airliner_msg": ""},
+                    "SendHk":                 { "airliner_cc":  0, "macro": "HS_SEND_HK_MID", "airliner_msg": ""}
+                },
+                "scheduler": {
+                    "activities": [
+                        "HS_SEND_HK_MID",
+                        "HS_WAKEUP_MID"
+                    ],
+                    "groups": [
+                        { "id": 1, "macro": "HS_SCH_GRP" }
+                    ]
+                },
+                "events": [
+                  {"macro": "HS_INIT_EID", "id": 1},
+    	            {"macro": "HS_APP_EXIT_EID", "id": 2},
+    	            {"macro": "HS_CDS_RESTORE_ERR_EID", "id": 3},
+    	            {"macro": "HS_CR_CMD_PIPE_ERR_EID", "id": 4},
+    	            {"macro": "HS_CR_EVENT_PIPE_ERR_EID", "id": 5},
+    	            {"macro": "HS_CR_WAKEUP_PIPE_ERR_EID", "id": 6},
+    	            {"macro": "HS_SUB_EVS_ERR_EID", "id": 7},
+    	            {"macro": "HS_SUB_REQ_ERR_EID", "id": 8},
+    	            {"macro": "HS_SUB_CMD_ERR_EID", "id": 9},
+    	            {"macro": "HS_AMT_REG_ERR_EID", "id": 10},
+    	            {"macro": "HS_EMT_REG_ERR_EID", "id": 11},
+    	            {"macro": "HS_XCT_REG_ERR_EID", "id": 12},
+    	            {"macro": "HS_MAT_REG_ERR_EID", "id": 13},
+    	            {"macro": "HS_AMT_LD_ERR_EID", "id": 14},
+    	            {"macro": "HS_EMT_LD_ERR_EID", "id": 15},
+    	            {"macro": "HS_XCT_LD_ERR_EID", "id": 16},
+    	            {"macro": "HS_MAT_LD_ERR_EID", "id": 17},
+    	            {"macro": "HS_CDS_CORRUPT_ERR_EID", "id": 18},
+    	            {"macro": "HS_CC_ERR_EID", "id": 19},
+    	            {"macro": "HS_MID_ERR_EID", "id": 20},
+    	            {"macro": "HS_HKREQ_LEN_ERR_EID", "id": 21},
+    	            {"macro": "HS_LEN_ERR_EID", "id": 22},
+    	            {"macro": "HS_NOOP_INF_EID", "id": 23},
+    	            {"macro": "HS_RESET_DBG_EID", "id": 24},
+    	            {"macro": "HS_ENABLE_APPMON_DBG_EID", "id": 25},
+    	            {"macro": "HS_DISABLE_APPMON_DBG_EID", "id": 26},
+    	            {"macro": "HS_ENABLE_EVENTMON_DBG_EID", "id": 27},
+    	            {"macro": "HS_DISABLE_EVENTMON_DBG_EID", "id": 28},
+    	            {"macro": "HS_ENABLE_ALIVENESS_DBG_EID", "id": 29},
+    	            {"macro": "HS_DISABLE_ALIVENESS_DBG_EID", "id": 30},
+    	            {"macro": "HS_RESET_RESETS_DBG_EID", "id": 31},
+    	            {"macro": "HS_SET_MAX_RESETS_DBG_EID", "id": 32},
+    	            {"macro": "HS_APPMON_GETADDR_ERR_EID", "id": 33},
+    	            {"macro": "HS_EVENTMON_GETADDR_ERR_EID", "id": 34},
+    	            {"macro": "HS_EXECOUNT_GETADDR_ERR_EID", "id": 35},
+    	            {"macro": "HS_MSGACTS_GETADDR_ERR_EID", "id": 36},
+    	            {"macro": "HS_RESET_LIMIT_ERR_EID", "id": 37},
+    	            {"macro": "HS_APPMON_APPNAME_ERR_EID", "id": 38},
+    	            {"macro": "HS_APPMON_RESTART_ERR_EID", "id": 39},
+    	            {"macro": "HS_APPMON_NOT_RESTARTED_ERR_EID", "id": 40},
+    	            {"macro": "HS_APPMON_FAIL_ERR_EID", "id": 41},
+    	            {"macro": "HS_APPMON_PROC_ERR_EID", "id": 42},
+    	            {"macro": "HS_APPMON_MSGACTS_ERR_EID", "id": 43},
+    	            {"macro": "HS_EVENTMON_MSGACTS_ERR_EID", "id": 44},
+    	            {"macro": "HS_EVENTMON_PROC_ERR_EID", "id": 45},
+    	            {"macro": "HS_EVENTMON_RESTART_ERR_EID", "id": 46},
+    	            {"macro": "HS_EVENTMON_NOT_RESTARTED_ERR_EID", "id": 47},
+    	            {"macro": "HS_EVENTMON_DELETE_ERR_EID", "id": 48},
+    	            {"macro": "HS_EVENTMON_NOT_DELETED_ERR_EID", "id": 49},
+    	            {"macro": "HS_AMTVAL_INF_EID", "id": 50},
+    	            {"macro": "HS_AMTVAL_ERR_EID", "id": 51},
+    	            {"macro": "HS_EMTVAL_INF_EID", "id": 52},
+    	            {"macro": "HS_EMTVAL_ERR_EID", "id": 53},
+    	            {"macro": "HS_XCTVAL_INF_EID", "id": 54},
+    	            {"macro": "HS_XCTVAL_ERR_EID", "id": 55},
+    	            {"macro": "HS_MATVAL_INF_EID", "id": 56},
+    	            {"macro": "HS_MATVAL_ERR_EID", "id": 57},
+    	            {"macro": "HS_DISABLE_APPMON_ERR_EID", "id": 58},
+    	            {"macro": "HS_DISABLE_EVENTMON_ERR_EID", "id": 59},
+    	            {"macro": "HS_SUB_WAKEUP_ERR_EID", "id": 60},
+    	            {"macro": "HS_CPUMON_HOGGING_ERR_EID", "id": 61},
+    	            {"macro": "HS_ENABLE_CPUHOG_DBG_EID", "id": 64},
+    	            {"macro": "HS_DISABLE_CPUHOG_DBG_EID", "id": 65},
+    	            {"macro": "HS_EVENTMON_SUB_EID", "id": 66},
+    	            {"macro": "HS_EVENTMON_UNSUB_EID", "id": 67},
+    	            {"macro": "HS_BADEMT_UNSUB_EID", "id": 68}
+                ],
+                "config": {
+                },
+                "tables": [
+                  {"id": "AppMon_Tbl", "title": "Application Monitor", "isDumpTable": false},
+      		        {"id": "EventMon_Tbl", "title": "Event Monitor", "isDumpTable": false},
+      		        {"id": "MsgActs_Tbl", "title": "Application Monitor", "isDumpTable": false},
+      		        {"id": "ExeCount_Tbl", "title": "Execution Monitor", "isDumpTable": false}
+                ]
+            }
+        }
+    }
+}
