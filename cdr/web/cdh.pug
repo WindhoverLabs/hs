@@ -1,0 +1,97 @@
+.row.os-theme-dark
+  article.col-xs-12.col-sm-12
+    header
+      span.widget-icon
+        i.fa.fa-table
+      h2 HS - Command and Data Handling
+    div.widget-body.table-responsive
+      table.table.table-condensed
+        tbody
+          tr
+            th Cmd Count
+            td
+              div(data-cdr={tlm:[{name:'/HS/HS_HkPacket_t/CmdCount'}],indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/Noop'},indicator:'cmd'}) No-Op  
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/Reset'},indicator:'cmd'}) Reset  
+          tr
+            th Error Count
+            td
+              div(data-cdr={tlm:[{name:'/HS/HS_HkPacket_t/CmdErrCount'}],indicator:'text'}) ---
+            td
+            
+          tr
+            th App Monitor
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentAppMonState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableAppMon'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableAppMon'},indicator:'cmd'}) Disable 
+          tr
+            th Event Monitor
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentEventMonState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableEventMon'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableEventMon'},indicator:'cmd'}) Disable 
+          tr
+            th Aliveness Monitor
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentAlivenessState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableAliveness'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableAliveness'},indicator:'cmd'}) Disable 
+          tr
+            th CPU Hog Monitor
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/CurrentCPUHogState'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/EnableCpuHog'},indicator:'cmd'}) Enable
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/DisableCpuHog'},indicator:'cmd'}) Disable 
+          tr
+            th CDS In Use
+            td
+              span -NA-
+            td
+          tr
+            th Resets Performed
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/ResetsPerformed'}], indicator:'text'}) ---
+            td
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/ResetResetsPerformed'},indicator:'cmd'}) Reset 
+          tr
+            th Max Resets
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/MaxResets'}], indicator:'text'}) ---
+            td  
+              button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetMaxResets'},indicator:'cmd'}) Set 
+          tr
+            th Events Monitored
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/EventsMonitoredCount'}], indicator:'text'}) ---
+            td
+          tr
+            th Invalid Events Monitored
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/InvalidEventMonCount'}], indicator:'text'}) ---
+            td  
+          tr
+            th Msg Act Exec
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/MsgActExec'}], indicator:'text'}) ---
+            td
+          tr
+            th CPU Average
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/UtilCpuAvg'}], indicator:'text'}) ---
+            td
+          tr
+            th CPU Peak
+            td
+              span(data-cdr={tlm: [{name:'/HS/HS_HkPacket_t/UtilCpuPeak'}], indicator:'text'}) ---
+            td
+              
+    footer.btn-group(role="group")      
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/ReportDiag'},indicator:'cmd'}) Report Diag 
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetUtilParams'},indicator:'cmd'}) Set Util Params 
+      button.btn.cdr-outline-primary(data-cdr={cmd:{name:'/HS/SetUtilDiag'},indicator:'cmd'}) Set Util Diag 
