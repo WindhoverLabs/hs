@@ -54,7 +54,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/hs/cdh"
+        "link": "flight/apps/hs/cdh"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -77,7 +77,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/hs/exec"
+        "link": "flight/apps/hs/exec"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -98,7 +98,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/to/tlm_app?appName=HS"
+        "link": "flight/apps/to/tlm_app?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -109,7 +109,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/sch/app_sch?appName=HS"
+        "link": "flight/apps/sch/app_sch?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -120,7 +120,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/cfe/tbl/tc?appName=HS"
+        "link": "flight/core/tbl/tc?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -131,7 +131,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/cfe/evs/efltr?appName=HS"
+        "link": "flight/core/evs/efltr?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true
@@ -142,7 +142,7 @@
        "componentName": "Blank",
        "componentState": {
         "text": "text",
-        "link": "/cfe/es/appctrl?appName=HS"
+        "link": "flight/core/es/appctrl?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true
