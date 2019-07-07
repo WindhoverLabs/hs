@@ -90,43 +90,10 @@
      "isClosable": true,
      "reorderEnabled": true,
      "title": "",
-     "activeItemIndex": 4,
+     "activeItemIndex": 0,
      "content": [
       {
-       "title": "Tlm Ctrl",
-       "type": "component",
-       "componentName": "Blank",
-       "componentState": {
-        "text": "text",
-        "link": "flight/apps/to/tlm_app?appName=HS"
-       },
-       "isClosable": true,
-       "reorderEnabled": true
-      },
-      {
-       "title": "SCH Ctrl",
-       "type": "component",
-       "componentName": "Blank",
-       "componentState": {
-        "text": "text",
-        "link": "flight/apps/sch/app_sch?appName=HS"
-       },
-       "isClosable": true,
-       "reorderEnabled": true
-      },
-      {
-       "title": "Tbl Ctrl",
-       "type": "component",
-       "componentName": "Blank",
-       "componentState": {
-        "text": "text",
-        "link": "flight/core/tbl/tc?appName=HS"
-       },
-       "isClosable": true,
-       "reorderEnabled": true
-      },
-      {
-       "title": "Event Filter",
+       "title": "Events",
        "type": "component",
        "componentName": "Blank",
        "componentState": {
@@ -143,6 +110,39 @@
        "componentState": {
         "text": "text",
         "link": "flight/core/es/appctrl?appName=HS"
+       },
+       "isClosable": true,
+       "reorderEnabled": true
+      },
+      {
+       "title": "Scheduling",
+       "type": "component",
+       "componentName": "Blank",
+       "componentState": {
+        "text": "text",
+        "link": "flight/apps/sch/app_sch?appName=HS"
+       },
+       "isClosable": true,
+       "reorderEnabled": true
+      },
+      {
+       "title": "Telemetry",
+       "type": "component",
+       "componentName": "Blank",
+       "componentState": {
+        "text": "text",
+        "link": "flight/apps/to/tlm_app?appName=HS"
+       },
+       "isClosable": true,
+       "reorderEnabled": true
+      },
+      {
+       "title": "Tables",
+       "type": "component",
+       "componentName": "Blank",
+       "componentState": {
+        "text": "text",
+        "link": "flight/core/tbl/tbl_ctl?appName=HS"
        },
        "isClosable": true,
        "reorderEnabled": true

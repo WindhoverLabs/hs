@@ -19,7 +19,7 @@ module.exports = class CfeCdrFlightAppsPlugin extends CdrFlightAppsPlugin {
                         type: CdrFlightAppsPlugin.ContentType.LAYOUT,
                         shortDescription: 'Main',
                         longDescription: 'Main HS.',
-                        filePath: '/main.lyt'
+                        filePath: '/main_layout.lyt'
                     },
                     cdh: {
                         type: CdrFlightAppsPlugin.ContentType.PANEL,
