@@ -52,13 +52,9 @@ add_airliner_app_def(hs
     INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 
-    USER_DOCS   ${CMAKE_CURRENT_SOURCE_DIR}/user_doxy.in
     DESIGN_DOCS ${CMAKE_CURRENT_SOURCE_DIR}/detail_doxy.in
 
-    MSG_OVERRIDES ${CMAKE_CURRENT_SOURCE_DIR}/hs_msg_overrides.json
-
-    COMMANDER_PLUGIN
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../cdr
+    DESIGN_DEFINITION ${CMAKE_CURRENT_SOURCE_DIR}/hs_msg_overrides.json
     
     REFERENCE_CONFIG
         ${PROJECT_SOURCE_DIR}/apps/hs/fsw/mission_inc
@@ -67,6 +63,9 @@ add_airliner_app_def(hs
 
 add_airliner_app_unit_test(hs-ut
     UTASSERT
+    NO_HELGRIND
+    NO_MASSIF
+
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/hs_app_test.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/hs_app_test.h
@@ -101,4 +100,7 @@ add_airliner_app_unit_test(hs-ut
 
     VALGRIND_SUPPRESSION_FILE
         ${CMAKE_CURRENT_SOURCE_DIR}/../unit_test/valgrind.supp
+        
+    REFERENCE_CUSTOM_SOURCE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hs_custom.c
 )
