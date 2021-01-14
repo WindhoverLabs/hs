@@ -39,5 +39,4 @@ TODO:
 
 
 .. image:: /docs/_static/doxygen.png
-   :target: ../../doxy/apps/lc/index.html
-
+   :target: ../../doxy/apps/hs/index.html

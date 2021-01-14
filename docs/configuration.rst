@@ -121,15 +121,6 @@ Table(s)
 ^^^^^^^^
 TODO: Tailor this section to be more HS specific.
 
-
-Tables are created at build time, though they can be changed at run time. Each 
-output channel can, and usually does, have its own unique configuration table.
-TO actually has 3 tables per channel.  The first two tables define the same 
-configurable parameters, but one of these is the backup table that is compiled
-directly into the application binary and only loaded if the nominal table fails
-to load from the file system.  Both the nominal and the backup tables have the 
-same structure.
-
 +-------------------------------+------------------------------------+------------------------------------------+
 | Table Name                    | Default file name                  | Parameter                                |
 +===============================+====================================+==========================================+
@@ -162,17 +153,6 @@ same structure.
 |                               |                                    | :hs:`HS_XCTEntry_t::ResourceType`        |
 +-------------------------------+------------------------------------+------------------------------------------+
 
-.. note::
-   When configuring the backup table, consider the fact that, when this table is in affect, the system
-   is already in a failure or partially degraded state.  Both the nominal and backup tables might be 
-   identical, but it may be more appropriate for the backup table to have a reduced telemetry 
-   definition to reduce the system load.  Be very careful on selecting what telemetry is in the backup 
-   table.  Specifically, you may want to ensure that the backup table has enough telemetry defined in 
-   the downlink to facilitate troubleshooting and recovering from the failure that caused the
-   failover to the backup configuration in the first place.  Lastly, understand that while the nominal
-   configuration table can also be changed before or during flight, the backup table cannot be changed
-   without recompiling the HS binary.
-   
 Below are example tables.
 
 .. literalinclude:: ../fsw/tables/hs_amt.c
