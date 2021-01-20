@@ -142,7 +142,7 @@
       struct: 
   commands: 
     HS_CMD_MID: 
-      msgid: 
+      msgID: 
       commands: 
         Noop: 
           cc: 0
@@ -190,13 +190,13 @@
           cc: 14
           struct: HS_SetUtilDiagCmd_t
     HS_SEND_HK_MID: 
-      msgid: 
+      msgID: 
       commands: 
         SendHK: 
           cc: 0
           struct: CFE_SB_CmdHdr_t
     HS_WAKEUP_MID: 
-      msgid: 
+      msgID: 
       commands: 
         WakeUp: 
           cc: 0
