@@ -31,7 +31,7 @@
  #
  #############################################################################
 
-add_airliner_app_def(hs
+buildliner_add_app_def(hs
     FILE HS
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/hs_app.c
@@ -59,7 +59,7 @@ add_airliner_app_def(hs
         ${PROJECT_SOURCE_DIR}/apps/hs/fsw/platform_inc
 )
 
-add_airliner_app_unit_test(hs-ut
+buildliner_add_app_def(hs-ut
     UTASSERT
     NO_HELGRIND
     NO_MASSIF
