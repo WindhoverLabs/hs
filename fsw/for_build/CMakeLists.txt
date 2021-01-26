@@ -59,7 +59,7 @@ buildliner_add_app_def(hs
         ${PROJECT_SOURCE_DIR}/apps/hs/fsw/platform_inc
 )
 
-buildliner_add_app_def(hs-ut
+buildliner_add_app_unit_test(hs-ut
     UTASSERT
     NO_HELGRIND
     NO_MASSIF
